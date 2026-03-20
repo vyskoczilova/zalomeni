@@ -221,7 +221,7 @@ class Zalomeni {
       if (get_option('zalomeni_'.$i, constant('Zalomeni::default_'.$i)) == 'on') {
         $temp_array = explode(',', get_option('zalomeni_'.$i.'_list', constant('Zalomeni::default_'.$i.'_list')));
         foreach ($temp_array as $j) {
-          $j = mb_strtolower(trim($j));
+          $j = preg_quote(mb_strtolower(trim($j)), '@');
           $word_matches .= ($word_matches == '' ? '' : '|') . $j;
         }
       }
@@ -234,7 +234,7 @@ class Zalomeni {
     if (get_option('zalomeni_between_number_and_unit', Zalomeni::default_between_number_and_unit) == 'on') {
       $temp_array = explode(',', get_option('zalomeni_between_number_and_unit_list', Zalomeni::default_between_number_and_unit_list));
       foreach ($temp_array as $j) {
-        $j = mb_strtolower(trim($j));
+        $j = preg_quote(mb_strtolower(trim($j)), '@');
         $word_matches .= ($word_matches == '' ? '' : '|') . $j;
       }
     }
@@ -262,7 +262,10 @@ class Zalomeni {
           $term = '';
           $words_split = explode(' ', $i);
           foreach ($words_split as $j) {
-            $term .= ($term == '' ? '(' : ' (') . str_replace(array('/', '(', ')'), array('\\/', '\\(', '\\)'), $j) . ')';
+            $escaped = preg_quote($j, '/');
+            // Restore supported backslash sequences (\d, \w, \s, etc.)
+            $escaped = preg_replace('/\\\\\\\\([dDwWsS])/', '\\\\$1', $escaped);
+            $term .= ($term == '' ? '(' : ' (') . $escaped . ')';
           }
           $term = '/' . $term . '/i';
           $return_array['customterm' . $term_counter++] = $term;
