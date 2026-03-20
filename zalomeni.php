@@ -351,8 +351,11 @@ class Zalomeni {
         global $wp_version;
         if ('<' != $curl[0] && '[' != $curl[0]
             && empty($no_texturize_shortcodes_stack) && empty($no_texturize_tags_stack)) { // If it's not a tag
-          $curl = preg_replace(get_option('zalomeni_matches'), get_option('zalomeni_replacements'), $curl);
-          $curl = preg_replace(get_option('zalomeni_matches'), get_option('zalomeni_replacements'), $curl);
+          $result = @preg_replace(get_option('zalomeni_matches'), get_option('zalomeni_replacements'), $curl);
+          if ($result !== null) {
+            $result = @preg_replace(get_option('zalomeni_matches'), get_option('zalomeni_replacements'), $result);
+          }
+          $curl = ($result !== null) ? $result : $curl;
         } else if (version_compare($wp_version, '2.9', '<')) {
           wptexturize_pushpop_element($curl, $no_texturize_tags_stack, $no_texturize_tags, '<', '>');
           wptexturize_pushpop_element($curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes, '[', ']');
