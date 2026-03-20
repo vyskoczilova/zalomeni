@@ -16,21 +16,4 @@ WP_Mock::userFunction( 'add_action' );
 WP_Mock::userFunction( 'add_filter' );
 WP_Mock::userFunction( 'get_option' )->andReturn( '' );
 
-// Stub _wptexturize_pushpop_element (WP core private function for tag tracking)
-if ( ! function_exists( '_wptexturize_pushpop_element' ) ) {
-    function _wptexturize_pushpop_element( $text, &$stack, $disabled_elements, $opening, $closing ) {
-        $tag = trim( str_replace( $closing, '', str_replace( $opening, '', $text ) ) );
-        $tag = explode( ' ', $tag )[0]; // strip attributes
-        if ( in_array( $tag, $disabled_elements ) ) {
-            $stack[] = $tag;
-        } elseif ( strpos( $tag, '/' ) === 0 ) {
-            $tag = ltrim( $tag, '/' );
-            if ( ( $key = array_search( $tag, $stack ) ) !== false ) {
-                unset( $stack[ $key ] );
-                $stack = array_values( $stack );
-            }
-        }
-    }
-}
-
 require_once __DIR__ . '/../zalomeni.php';
