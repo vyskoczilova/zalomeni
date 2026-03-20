@@ -3,7 +3,7 @@ Contributors: vyskoczilova, honza.skypala
 Tags: grammar, Czech, typography, non-breaking space
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 1.5.1
+Stable tag: 1.6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -69,7 +69,8 @@ Poznámka: tímto způsobem můžete filtry nejen odebírat, ale také přidáva
 
 == Changelog ==
 
-= 1.5.1 =
+= 1.6.0 =
+* New maintainer: Karolína Vyskočilová (vyskoczilova)
 * Security: added sanitize callbacks to all register_setting calls
 * Security: escaped regex metacharacters in user-defined option lists (preg_quote)
 * Security: added preg_replace error handling to prevent null output
@@ -80,7 +81,8 @@ Poznámka: tímto způsobem můžete filtry nejen odebírat, ale také přidáva
 * Security: inlined WP-private _wptexturize_pushpop_element function
 * Security: added direct file access guard
 * Improvement: added uninstall.php for clean option removal
-* Improvement: added GPL-2.0-or-later license header
+* Improvement: license changed from WTFPL to GPL-2.0-or-later
+* Improvement: all admin strings are now translatable via wp i18n make-pot
 * Improvement: lazy-load plugin.php only on admin pages
 * Improvement: guarded pre-1.3 migration against missing options
 * Improvement: strict comparisons and PHP 8+ compatibility throughout

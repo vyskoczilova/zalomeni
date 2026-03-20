@@ -3,7 +3,7 @@
  * Plugin Name: Zalomení
  * Plugin URI:  https://wordpress.org/plugins/zalomeni/
  * Description: Puts non-breakable space after one-letter Czech prepositions like 'k', 's', 'v' or 'z'.
- * Version:     1.5.1
+ * Version:     1.6.0
  * Author:      Karolína Vyskočiová
  * Author URI:  https://kybernaut.cz
  * Text Domain: zalomeni
@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) || exit;
 
 class Zalomeni {
-  const version = '1.5.1';
+  const version = '1.6.0';
 
   public function __construct() {
     register_activation_hook(__FILE__, array(__CLASS__, 'activate'));
@@ -140,7 +140,7 @@ class Zalomeni {
       self::$this_plugin = plugin_basename(__FILE__);
     }
     if ($file === self::$this_plugin) {
-      $settings_link = '<a href="options-reading.php#zalomeni_options_desc">' . __('Settings') . '</a>';
+      $settings_link = '<a href="options-reading.php#zalomeni_options_desc">' . __('Settings', 'zalomeni') . '</a>';
       array_unshift( $links, $settings_link ); // before other links
     }
     return $links;
@@ -165,17 +165,17 @@ class Zalomeni {
 
     add_settings_section('zalomeni_section', self::texturize(__('Nevhodná slova a zalomení na konci řádku', 'zalomeni')), array( __CLASS__, 'settings_section_description' ), 'reading');
 
-    add_settings_field('zalomeni_prepositions', __('Předložky', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'prepositions', 'description'=>"Vkládat pevnou mezeru za následující předložky.", 'toggle_list_read_only'=>true));
-    add_settings_field('zalomeni_prepositions_list', '', array( __CLASS__, 'settings_field_textlist' ), 'reading', 'zalomeni_section', array('option'=>'prepositions', 'description'=>"(oddělte jednotlivé předložky čárkou)"));
-    add_settings_field('zalomeni_conjunctions', __('Spojky', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'conjunctions', 'description'=>"Vkládat pevnou mezeru za následující spojky.", 'toggle_list_read_only'=>true));
-    add_settings_field('zalomeni_conjunctions_list', '', array( __CLASS__, 'settings_field_textlist' ), 'reading', 'zalomeni_section', array('option'=>'conjunctions', 'description'=>"(oddělte jednotlivé spojky čárkou)"));
-    add_settings_field('zalomeni_abbreviations', __('Zkratky', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'abbreviations', 'description'=>"Vkládat pevnou mezeru za následující zkratky.", 'toggle_list_read_only'=>true));
-    add_settings_field('zalomeni_abbreviations_list', '', array( __CLASS__, 'settings_field_textlist' ), 'reading', 'zalomeni_section', array('option'=>'abbreviations', 'description'=>"(oddělte jednotlivé zkratky čárkou)"));
-    add_settings_field('zalomeni_between_number_and_unit', __('Jednotky a míry', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'between_number_and_unit', 'description'=>"Vkládat pevnou mezeru mezi číslovku a jednotku míry (měrné jednotky, měna apod., např. <em>5 m</em> nebo <em>10 kg</em>).", 'toggle_list_read_only'=>true));
-    add_settings_field('zalomeni_between_number_and_unit_list', '', array( __CLASS__, 'settings_field_textlist' ), 'reading', 'zalomeni_section', array('option'=>'between_number_and_unit', 'description'=>"(oddělte jednotlivé míry čárkou)"));
-    add_settings_field('zalomeni_space_between_numbers', __('Mezery uprostřed čísel', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'space_between_numbers', 'description'=>"Pokud jsou dvě čísla oddělena mezerou, předpokládat, že se jedná o formátování čísla pomocí mezery (např. telefonní číslo <em>800 123 456</em>) a nahrazovat mezeru pevnou mezerou, aby nedošlo k zalomení řádku uprostřed čísla."));
-    add_settings_field('zalomeni_space_after_ordered_number', __('Řadové číslovky', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'space_after_ordered_number', 'description'=>"Zabránit zalomení řádku za řadovou číslovkou; díky tomu nedojde k zalomení řádku uprostřed data (např. <em>1. ledna</em>) a v podobných případech (<em>19. ročník</em>, <em>3. svazek</em>, <em>5. kapitola</em> apod.)"));
-    add_settings_field('zalomeni_spaces_in_scales', __('Měřítka a poměry', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'spaces_in_scales', 'description'=>"Pevné mezery v měřítkách a poměrech (např. <em>1 : 50 000</em>)"));
+    add_settings_field('zalomeni_prepositions', __('Předložky', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'prepositions', 'description'=>__('Vkládat pevnou mezeru za následující předložky.', 'zalomeni'), 'toggle_list_read_only'=>true));
+    add_settings_field('zalomeni_prepositions_list', '', array( __CLASS__, 'settings_field_textlist' ), 'reading', 'zalomeni_section', array('option'=>'prepositions', 'description'=>__('(oddělte jednotlivé předložky čárkou)', 'zalomeni')));
+    add_settings_field('zalomeni_conjunctions', __('Spojky', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'conjunctions', 'description'=>__('Vkládat pevnou mezeru za následující spojky.', 'zalomeni'), 'toggle_list_read_only'=>true));
+    add_settings_field('zalomeni_conjunctions_list', '', array( __CLASS__, 'settings_field_textlist' ), 'reading', 'zalomeni_section', array('option'=>'conjunctions', 'description'=>__('(oddělte jednotlivé spojky čárkou)', 'zalomeni')));
+    add_settings_field('zalomeni_abbreviations', __('Zkratky', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'abbreviations', 'description'=>__('Vkládat pevnou mezeru za následující zkratky.', 'zalomeni'), 'toggle_list_read_only'=>true));
+    add_settings_field('zalomeni_abbreviations_list', '', array( __CLASS__, 'settings_field_textlist' ), 'reading', 'zalomeni_section', array('option'=>'abbreviations', 'description'=>__('(oddělte jednotlivé zkratky čárkou)', 'zalomeni')));
+    add_settings_field('zalomeni_between_number_and_unit', __('Jednotky a míry', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'between_number_and_unit', 'description'=>__('Vkládat pevnou mezeru mezi číslovku a jednotku míry (měrné jednotky, měna apod., např. <em>5 m</em> nebo <em>10 kg</em>).', 'zalomeni'), 'toggle_list_read_only'=>true));
+    add_settings_field('zalomeni_between_number_and_unit_list', '', array( __CLASS__, 'settings_field_textlist' ), 'reading', 'zalomeni_section', array('option'=>'between_number_and_unit', 'description'=>__('(oddělte jednotlivé míry čárkou)', 'zalomeni')));
+    add_settings_field('zalomeni_space_between_numbers', __('Mezery uprostřed čísel', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'space_between_numbers', 'description'=>__('Pokud jsou dvě čísla oddělena mezerou, předpokládat, že se jedná o formátování čísla pomocí mezery (např. telefonní číslo <em>800 123 456</em>) a nahrazovat mezeru pevnou mezerou, aby nedošlo k zalomení řádku uprostřed čísla.', 'zalomeni')));
+    add_settings_field('zalomeni_space_after_ordered_number', __('Řadové číslovky', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'space_after_ordered_number', 'description'=>__('Zabránit zalomení řádku za řadovou číslovkou; díky tomu nedojde k zalomení řádku uprostřed data (např. <em>1. ledna</em>) a v podobných případech (<em>19. ročník</em>, <em>3. svazek</em>, <em>5. kapitola</em> apod.)', 'zalomeni')));
+    add_settings_field('zalomeni_spaces_in_scales', __('Měřítka a poměry', 'zalomeni'), array( __CLASS__, 'settings_field_checkbox' ), 'reading', 'zalomeni_section', array('option'=>'spaces_in_scales', 'description'=>__('Pevné mezery v měřítkách a poměrech (např. <em>1 : 50 000</em>)', 'zalomeni')));
     add_settings_field('zalomeni_custom_terms', __('Vlastní výrazy', 'zalomeni'), array( __CLASS__, 'settings_field_custom_terms' ), 'reading', 'zalomeni_section');
 
     if ( empty( get_option('zalomeni_matches') ) ) {
@@ -192,7 +192,7 @@ class Zalomeni {
       . checked('on', get_option("zalomeni_" . $option, self::get_default($args['option'])), false)
       . (array_key_exists('toggle_list_read_only', $args) ? ' onchange="document.getElementById(\'zalomeni_' . esc_js( $option ) . '_list\').readOnly = this.checked?\'\':\'1\';"' : '')
       . ' /> '
-      . self::texturize(__($args['description'], 'zalomeni'))
+      . self::texturize($args['description'])
     );
   }
 
@@ -202,7 +202,7 @@ class Zalomeni {
       '<input type="text" name="zalomeni_' . esc_attr( $option ) . '_list" id="zalomeni_' . esc_attr( $option ) . '_list" class="regular-text" value="' . esc_attr( get_option('zalomeni_' . $option . '_list', self::get_default($args['option'] . '_list')) ) . '"'
        . ((get_option("zalomeni_" . $option, self::get_default($args['option'])) !== 'on') ? ' readonly="1"' : '')
       . ' /> '
-      . self::texturize(__($args['description'], 'zalomeni'))
+      . self::texturize($args['description'])
     );
   }
 
