@@ -158,6 +158,40 @@ class SecurityTest extends TestCase {
         $this->assertSame( 1, $result, 'Abbreviation with dot should match literally' );
     }
 
+    public function test_empty_list_items_are_filtered_out(): void {
+        $this->mock_prepare_matches_options( [
+            'zalomeni_prepositions'      => 'on',
+            'zalomeni_prepositions_list' => 'k, , s, , v, z',
+        ] );
+
+        $method = new ReflectionMethod( 'Zalomeni', 'prepare_matches' );
+        $method->setAccessible( true );
+        $matches = $method->invoke( null );
+
+        $this->assertArrayHasKey( 'words', $matches );
+        // Empty alternation branches (||) must not appear — they match everything
+        $this->assertStringNotContainsString( '||', $matches['words'],
+            'Empty list items should be filtered — || matches every position' );
+        // Should still match valid prepositions
+        $this->assertSame( 1, preg_match( $matches['words'], ' k mostu' ) );
+    }
+
+    public function test_percent_unit_is_properly_escaped(): void {
+        $this->mock_prepare_matches_options( [
+            'zalomeni_between_number_and_unit'      => 'on',
+            'zalomeni_between_number_and_unit_list' => '%',
+        ] );
+
+        $method = new ReflectionMethod( 'Zalomeni', 'prepare_matches' );
+        $method->setAccessible( true );
+        $matches = $method->invoke( null );
+
+        $this->assertArrayHasKey( 'units', $matches );
+        $result = @preg_match( $matches['units'], '20 % sleva' );
+        $this->assertNotFalse( $result, 'Regex with % is invalid' );
+        $this->assertSame( 1, $result );
+    }
+
     // =========================================================================
     // 4. Custom terms — incomplete escaping
     // =========================================================================

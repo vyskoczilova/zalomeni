@@ -222,6 +222,7 @@ class Zalomeni {
         $temp_array = explode(',', get_option('zalomeni_'.$i.'_list', constant('Zalomeni::default_'.$i.'_list')));
         foreach ($temp_array as $j) {
           $j = preg_quote(mb_strtolower(trim($j)), '@');
+          if ($j === '') continue;
           $word_matches .= ($word_matches == '' ? '' : '|') . $j;
         }
       }
@@ -235,6 +236,7 @@ class Zalomeni {
       $temp_array = explode(',', get_option('zalomeni_between_number_and_unit_list', Zalomeni::default_between_number_and_unit_list));
       foreach ($temp_array as $j) {
         $j = preg_quote(mb_strtolower(trim($j)), '@');
+        if ($j === '') continue;
         $word_matches .= ($word_matches == '' ? '' : '|') . $j;
       }
     }
