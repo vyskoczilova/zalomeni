@@ -9,7 +9,7 @@
  * Text Domain: zalomeni
  * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Requires at least: 5.0
+ * Requires at least: 6.0
  * Requires PHP: 7.4
  */
 
@@ -19,8 +19,8 @@ class Zalomeni {
   const version = '1.5.1';
 
   public function __construct() {
-    register_activation_hook(__FILE__, array($this, 'activate'));
-    if (is_admin()){
+    register_activation_hook(__FILE__, array(__CLASS__, 'activate'));
+    if (is_admin()) {
       add_action('admin_init', array($this, 'admin_init'));
     } else {
       add_action('init', array($this, 'add_filters'));
@@ -34,7 +34,7 @@ class Zalomeni {
       $filters = array_combine($filters, $filters);
       $filters = apply_filters('zalomeni_filtry', $filters);
       foreach ($filters as $filter) {
-        add_filter($filter, array($this, 'texturize'));  // content filter
+        add_filter($filter, array(__CLASS__, 'texturize'));
       }
     }
   }
@@ -133,7 +133,7 @@ class Zalomeni {
     }
   }
 
-  protected static $this_plugin;
+  private static $this_plugin;
   public function add_settings_to_plugin_actions($links, $file) {
     if (!self::$this_plugin) {
       include_once(ABSPATH . 'wp-admin/includes/plugin.php');
@@ -150,18 +150,18 @@ class Zalomeni {
     $this->update_plugin_version();
     add_filter('plugin_action_links', array($this, 'add_settings_to_plugin_actions'), 10, 2);
 
-    register_setting('reading', 'zalomeni_prepositions', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
-    register_setting('reading', 'zalomeni_prepositions_list', array('sanitize_callback' => array('Zalomeni', 'sanitize_text_list')));
-    register_setting('reading', 'zalomeni_conjunctions', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
-    register_setting('reading', 'zalomeni_conjunctions_list', array('sanitize_callback' => array('Zalomeni', 'sanitize_text_list')));
-    register_setting('reading', 'zalomeni_abbreviations', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
-    register_setting('reading', 'zalomeni_abbreviations_list', array('sanitize_callback' => array('Zalomeni', 'sanitize_text_list')));
-    register_setting('reading', 'zalomeni_between_number_and_unit', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
-    register_setting('reading', 'zalomeni_between_number_and_unit_list', array('sanitize_callback' => array('Zalomeni', 'sanitize_text_list')));
-    register_setting('reading', 'zalomeni_space_between_numbers', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
-    register_setting('reading', 'zalomeni_space_after_ordered_number', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
-    register_setting('reading', 'zalomeni_spaces_in_scales', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
-    register_setting('reading', 'zalomeni_custom_terms', array('sanitize_callback' => array('Zalomeni', 'sanitize_custom_terms')));
+    register_setting('reading', 'zalomeni_prepositions', array('sanitize_callback' => array(__CLASS__, 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_prepositions_list', array('sanitize_callback' => array(__CLASS__, 'sanitize_text_list')));
+    register_setting('reading', 'zalomeni_conjunctions', array('sanitize_callback' => array(__CLASS__, 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_conjunctions_list', array('sanitize_callback' => array(__CLASS__, 'sanitize_text_list')));
+    register_setting('reading', 'zalomeni_abbreviations', array('sanitize_callback' => array(__CLASS__, 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_abbreviations_list', array('sanitize_callback' => array(__CLASS__, 'sanitize_text_list')));
+    register_setting('reading', 'zalomeni_between_number_and_unit', array('sanitize_callback' => array(__CLASS__, 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_between_number_and_unit_list', array('sanitize_callback' => array(__CLASS__, 'sanitize_text_list')));
+    register_setting('reading', 'zalomeni_space_between_numbers', array('sanitize_callback' => array(__CLASS__, 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_space_after_ordered_number', array('sanitize_callback' => array(__CLASS__, 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_spaces_in_scales', array('sanitize_callback' => array(__CLASS__, 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_custom_terms', array('sanitize_callback' => array(__CLASS__, 'sanitize_custom_terms')));
 
     add_settings_section('zalomeni_section', self::texturize(__('Nevhodná slova a zalomení na konci řádku', 'zalomeni')), array( __CLASS__, 'settings_section_description' ), 'reading');
 
@@ -208,7 +208,7 @@ class Zalomeni {
 
   public static function settings_field_custom_terms() {
     echo(
-      self::texturize(__('Zde můžete uvést vlastní termíny, v nichž mají být mezery nahrazeny pevnými mezerami tak, aby nedošlo k zalomení uvnitř těchto výrazů. Uveďte vždy každý výraz na samostatný řádek; pokud je výraz složen z více jak dvou slov, tedy je v něm více jak jedna mezera, pak všechny mezery budou nahrazeny za pevné mezery. Lze použít výrazu \\d pro libovolnou číslici (pro pokročilé administrátory: algoritmus používá <a href="http://www.php.net/manual/en/reference.pcre.pattern.syntax.php" target="_blank">Perl Compatible Regular Expressions</a>, lze využít syntaxe této specifikace).', 'zalomeni'))
+      self::texturize(__('Zde můžete uvést vlastní termíny, v nichž mají být mezery nahrazeny pevnými mezerami tak, aby nedošlo k zalomení uvnitř těchto výrazů. Uveďte vždy každý výraz na samostatný řádek; pokud je výraz složen z více jak dvou slov, tedy je v něm více jak jedna mezera, pak všechny mezery budou nahrazeny za pevné mezery. Lze použít výrazu \\d pro libovolnou číslici (pro pokročilé administrátory: algoritmus používá <a href="https://www.php.net/manual/en/reference.pcre.pattern.syntax.php" target="_blank">Perl Compatible Regular Expressions</a>, lze využít syntaxe této specifikace).', 'zalomeni'))
       . '<p><textarea name="zalomeni_custom_terms" id="zalomeni_custom_terms" rows="10" cols="50" class="regular-text">'
       . esc_textarea( get_option('zalomeni_custom_terms', self::default_custom_terms) )
       . '</textarea></p>'
@@ -240,7 +240,7 @@ class Zalomeni {
                    'update_option_zalomeni_space_after_ordered_number',
                    'update_option_zalomeni_spaces_in_scales',
                    'update_option_zalomeni_custom_terms') as $i) {
-      add_action($i, array($this, 'update_matches_and_replacements'));
+      add_action($i, array(__CLASS__, 'update_matches_and_replacements'));
     }
   }
 
@@ -365,7 +365,7 @@ class Zalomeni {
       . '<p style="line-height:1.5em;">Plugin <strong>Zalomení</strong><br />Autor: <a href="https://www.honza.info/" class="external" target="_blank" title="https://www.honza.info/">Honza Skýpala</a></p>'
       . '</div>'
       . '<p>' . self::texturize(__('Upravujeme-li písemný dokument, radí nám <strong>Pravidla českého pravopisu</strong> nepsat neslabičné předložky <em>v, s, z, k</em> na konec řádku, ale psát je na stejný řádek se slovem, které nese přízvuk (např. ve spojení <em>k mostu</em>, <em>s bratrem</em>, <em>v Plzni</em>, <em>z nádraží</em>). Typografické normy jsou ještě přísnější: podle některých je nepatřičné ponechat na konci řádku jakékoli jednopísmenné slovo, tedy také předložky a spojky <em>a, i, o, u</em>;. Někteří pisatelé dokonce nechtějí z estetických důvodů ponechávat na konci řádků jakékoli jednoslabičné výrazy (např. <em>ve, ke, ku, že, na, do, od, pod</em>).', 'zalomeni')) . '</p>'
-      . '<p>' . self::texturize(__('<a href="http://prirucka.ujc.cas.cz/?id=880" class="external" target="_blank">Více informací</a> na webu Ústavu pro jazyk český, Akademie věd ČR.', 'zalomeni')) . '</p>'
+      . '<p>' . self::texturize(__('<a href="https://prirucka.ujc.cas.cz/?id=880" class="external" target="_blank">Více informací</a> na webu Ústavu pro jazyk český, Akademie věd ČR.', 'zalomeni')) . '</p>'
       . '<p>' . self::texturize(__('Tento plugin řeší některé z uvedených příkladů: v textu nahrazuje běžné mezery za pevné tak, aby nedošlo k zalomení řádku v nevhodném místě.', 'zalomeni')) . '</p>'
     );
   }
