@@ -359,6 +359,20 @@ class Zalomeni {
     );
   }
 
+  static private function pushpop_element($text, &$stack, $disabled_elements, $opening, $closing) {
+    $tag = trim( str_replace( $closing, '', str_replace( $opening, '', $text ) ) );
+    $tag = explode( ' ', $tag )[0];
+    if ( in_array( $tag, $disabled_elements, true ) ) {
+      $stack[] = $tag;
+    } elseif ( strpos( $tag, '/' ) === 0 ) {
+      $tag = ltrim( $tag, '/' );
+      if ( ( $key = array_search( $tag, $stack, true ) ) !== false ) {
+        unset( $stack[ $key ] );
+        $stack = array_values( $stack );
+      }
+    }
+  }
+
   static public function texturize($text) {
     $matches = get_option('zalomeni_matches');
     if (empty($matches)) return $text;
@@ -386,8 +400,8 @@ class Zalomeni {
           }
           $curl = ($result !== null) ? $result : $curl;
         } else {
-          _wptexturize_pushpop_element($curl, $no_texturize_tags_stack, $no_texturize_tags, '<', '>');
-          _wptexturize_pushpop_element($curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes, '[', ']');
+          self::pushpop_element($curl, $no_texturize_tags_stack, $no_texturize_tags, '<', '>');
+          self::pushpop_element($curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes, '[', ']');
         }
       }
 
