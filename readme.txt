@@ -138,6 +138,11 @@ Poznámka: tímto způsobem můžete filtry nejen odebírat, ale také přidáva
 = 1.0 =
 * Initial release.
 
+== Upgrade Notice ==
+
+= 1.6.0 =
+Security release. All user inputs are now sanitized and escaped. Update immediately.
+
 == Licence ==
 
 This plugin is licensed under the GPL-2.0-or-later license. See https://www.gnu.org/licenses/gpl-2.0.html for details.
