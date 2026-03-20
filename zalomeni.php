@@ -54,6 +54,27 @@ class Zalomeni {
   const default_space_after_ordered_number   = 'on';
   const default_custom_terms                 = "Formule 1\nWindows \d\niPhone \d\niPhone S\d\niPad \d\nWii U\nPlayStation \d\nXBox 360";
   
+  static private function get_default($key) {
+    static $defaults = null;
+    if ($defaults === null) {
+      $defaults = array(
+        'prepositions'                 => self::default_prepositions,
+        'prepositions_list'            => self::default_prepositions_list,
+        'conjunctions'                 => self::default_conjunctions,
+        'conjunctions_list'            => self::default_conjunctions_list,
+        'abbreviations'                => self::default_abbreviations,
+        'abbreviations_list'           => self::default_abbreviations_list,
+        'between_number_and_unit'      => self::default_between_number_and_unit,
+        'between_number_and_unit_list' => self::default_between_number_and_unit_list,
+        'spaces_in_scales'             => self::default_spaces_in_scales,
+        'space_between_numbers'        => self::default_space_between_numbers,
+        'space_after_ordered_number'   => self::default_space_after_ordered_number,
+        'custom_terms'                 => self::default_custom_terms,
+      );
+    }
+    return isset($defaults[$key]) ? $defaults[$key] : '';
+  }
+
   static function add_options() {
     add_option('zalomeni_version', self::version);
 
@@ -157,7 +178,7 @@ class Zalomeni {
     $option = sanitize_key( $args['option'] );
     echo(
       '<input type="checkbox" name="zalomeni_' . esc_attr( $option ) . '" id="zalomeni_' . esc_attr( $option ) . '" value="on" '
-      . checked('on', get_option("zalomeni_" . $option, constant('Zalomeni::default_' . $args['option'])), false)
+      . checked('on', get_option("zalomeni_" . $option, self::get_default($args['option'])), false)
       . (array_key_exists('toggle_list_read_only', $args) ? ' onchange="document.getElementById(\'zalomeni_' . esc_js( $option ) . '_list\').readOnly = this.checked?\'\':\'1\';"' : '')
       . ' /> '
       . Zalomeni::texturize(__($args['description'], 'zalomeni'))
@@ -167,8 +188,8 @@ class Zalomeni {
   static public function settings_field_textlist(array $args) {
     $option = sanitize_key( $args['option'] );
     echo(
-      '<input type="text" name="zalomeni_' . esc_attr( $option ) . '_list" id="zalomeni_' . esc_attr( $option ) . '_list" class="regular-text" value="' . esc_attr( get_option('zalomeni_' . $option . '_list', constant('Zalomeni::default_' . $args['option'] . '_list')) ) . '"'
-       . ((get_option("zalomeni_" . $option, constant('Zalomeni::default_' . $args['option'])) != 'on') ? ' readonly="1"' : '')
+      '<input type="text" name="zalomeni_' . esc_attr( $option ) . '_list" id="zalomeni_' . esc_attr( $option ) . '_list" class="regular-text" value="' . esc_attr( get_option('zalomeni_' . $option . '_list', self::get_default($args['option'] . '_list')) ) . '"'
+       . ((get_option("zalomeni_" . $option, self::get_default($args['option'])) != 'on') ? ' readonly="1"' : '')
       . ' /> '
       . Zalomeni::texturize(__($args['description'], 'zalomeni'))
     );
@@ -222,8 +243,8 @@ class Zalomeni {
 
     $word_matches = '';
     foreach (array('prepositions', 'conjunctions', 'abbreviations') as $i) {
-      if (get_option('zalomeni_'.$i, constant('Zalomeni::default_'.$i)) == 'on') {
-        $temp_array = explode(',', get_option('zalomeni_'.$i.'_list', constant('Zalomeni::default_'.$i.'_list')));
+      if (get_option('zalomeni_'.$i, self::get_default($i)) == 'on') {
+        $temp_array = explode(',', get_option('zalomeni_'.$i.'_list', self::get_default($i.'_list')));
         foreach ($temp_array as $j) {
           $j = preg_quote(mb_strtolower(trim($j)), '@');
           if ($j === '') continue;
@@ -286,7 +307,7 @@ class Zalomeni {
     $return_array = array();
 
     foreach (array('prepositions', 'conjunctions', 'abbreviations') as $i) {
-      if (get_option('zalomeni_'.$i, constant('Zalomeni::default_'.$i)) == 'on') {
+      if (get_option('zalomeni_'.$i, self::get_default($i)) == 'on') {
         $return_array['words'] = '$1$2&nbsp;';
         break;
       }
