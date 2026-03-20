@@ -114,18 +114,18 @@ class Zalomeni {
     $this->update_plugin_version();
     add_filter('plugin_action_links', array($this, 'add_settings_to_plugin_actions'), 10, 2);  // link from Plugins list admin page to settings of this plugin
 
-    register_setting('reading', 'zalomeni_prepositions');
-    register_setting('reading', 'zalomeni_prepositions_list');
-    register_setting('reading', 'zalomeni_conjunctions');
-    register_setting('reading', 'zalomeni_conjunctions_list');
-    register_setting('reading', 'zalomeni_abbreviations');
-    register_setting('reading', 'zalomeni_abbreviations_list');
-    register_setting('reading', 'zalomeni_between_number_and_unit');
-    register_setting('reading', 'zalomeni_between_number_and_unit_list');
-    register_setting('reading', 'zalomeni_space_between_numbers');
-    register_setting('reading', 'zalomeni_space_after_ordered_number');
-    register_setting('reading', 'zalomeni_spaces_in_scales');
-    register_setting('reading', 'zalomeni_custom_terms');
+    register_setting('reading', 'zalomeni_prepositions', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_prepositions_list', array('sanitize_callback' => array('Zalomeni', 'sanitize_text_list')));
+    register_setting('reading', 'zalomeni_conjunctions', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_conjunctions_list', array('sanitize_callback' => array('Zalomeni', 'sanitize_text_list')));
+    register_setting('reading', 'zalomeni_abbreviations', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_abbreviations_list', array('sanitize_callback' => array('Zalomeni', 'sanitize_text_list')));
+    register_setting('reading', 'zalomeni_between_number_and_unit', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_between_number_and_unit_list', array('sanitize_callback' => array('Zalomeni', 'sanitize_text_list')));
+    register_setting('reading', 'zalomeni_space_between_numbers', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_space_after_ordered_number', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_spaces_in_scales', array('sanitize_callback' => array('Zalomeni', 'sanitize_checkbox')));
+    register_setting('reading', 'zalomeni_custom_terms', array('sanitize_callback' => array('Zalomeni', 'sanitize_custom_terms')));
 
     add_settings_section('zalomeni_section', $this->texturize(__('Nevhodná slova a zalomení na konci řádku', 'zalomeni')), 'Zalomeni::settings_section_description', 'reading');
 
@@ -150,19 +150,21 @@ class Zalomeni {
   }
 
   static public function settings_field_checkbox(array $args) {
+    $option = sanitize_key( $args['option'] );
     echo(
-      '<input type="checkbox" name="zalomeni_' . $args['option'] . '" id="zalomeni_' . $args['option'] . '" value="on" '
-      . checked('on', get_option("zalomeni_" . $args['option'], constant('Zalomeni::default_' . $args['option'])), false)
-      . (array_key_exists('toggle_list_read_only', $args) ? ' onchange="document.getElementById(\'zalomeni_' . $args['option'] . '_list\').readOnly = this.checked?\'\':\'1\';"' : '')
+      '<input type="checkbox" name="zalomeni_' . esc_attr( $option ) . '" id="zalomeni_' . esc_attr( $option ) . '" value="on" '
+      . checked('on', get_option("zalomeni_" . $option, constant('Zalomeni::default_' . $args['option'])), false)
+      . (array_key_exists('toggle_list_read_only', $args) ? ' onchange="document.getElementById(\'zalomeni_' . esc_js( $option ) . '_list\').readOnly = this.checked?\'\':\'1\';"' : '')
       . ' /> '
       . Zalomeni::texturize(__($args['description'], 'zalomeni'))
     );
   }
 
   static public function settings_field_textlist(array $args) {
+    $option = sanitize_key( $args['option'] );
     echo(
-      '<input type="text" name="zalomeni_' . $args['option'] . '_list" id="zalomeni_' . $args['option'] . '_list" class="regular-text" value="' . get_option('zalomeni_' . $args['option'] . '_list', constant('Zalomeni::default_' . $args['option'] . '_list')) . '"'
-       . ((get_option("zalomeni_" . $args['option'], constant('Zalomeni::default_' . $args['option'])) != 'on') ? ' readonly="1"' : '')
+      '<input type="text" name="zalomeni_' . esc_attr( $option ) . '_list" id="zalomeni_' . esc_attr( $option ) . '_list" class="regular-text" value="' . esc_attr( get_option('zalomeni_' . $option . '_list', constant('Zalomeni::default_' . $args['option'] . '_list')) ) . '"'
+       . ((get_option("zalomeni_" . $option, constant('Zalomeni::default_' . $args['option'])) != 'on') ? ' readonly="1"' : '')
       . ' /> '
       . Zalomeni::texturize(__($args['description'], 'zalomeni'))
     );
@@ -172,9 +174,21 @@ class Zalomeni {
     echo(
       Zalomeni::texturize(__('Zde můžete uvést vlastní termíny, v nichž mají být mezery nahrazeny pevnými mezerami tak, aby nedošlo k zalomení uvnitř těchto výrazů. Uveďte vždy každý výraz na samostatný řádek; pokud je výraz složen z více jak dvou slov, tedy je v něm více jak jedna mezera, pak všechny mezery budou nahrazeny za pevné mezery. Lze použít výrazu \\d pro libovolnou číslici (pro pokročilé administrátory: algoritmus používá <a href="http://www.php.net/manual/en/reference.pcre.pattern.syntax.php" target="_blank">Perl Compatible Regular Expressions</a>, lze využít syntaxe této specifikace).', 'zalomeni'))
       . '<p><textarea name="zalomeni_custom_terms" id="zalomeni_custom_terms" rows="10" cols="50" class="regular-text">'
-      . get_option('zalomeni_custom_terms', Zalomeni::default_custom_terms)
+      . esc_textarea( get_option('zalomeni_custom_terms', Zalomeni::default_custom_terms) )
       . '</textarea></p>'
     );
+  }
+
+  static public function sanitize_checkbox($value) {
+    return $value === 'on' ? 'on' : '';
+  }
+
+  static public function sanitize_text_list($value) {
+    return sanitize_text_field($value);
+  }
+
+  static public function sanitize_custom_terms($value) {
+    return sanitize_textarea_field($value);
   }
 
   private function add_update_option_hooks() {

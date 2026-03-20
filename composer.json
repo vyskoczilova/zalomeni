@@ -1,0 +1,10 @@
+{
+    "name": "kybernaut/zalomeni",
+    "description": "WordPress plugin for Czech non-breaking spaces",
+    "require-dev": {
+        "phpunit/phpunit": "^9.6",
+        "10up/wp_mock": "^1.0"
+    },
+    "autoload": {
+    }
+}
