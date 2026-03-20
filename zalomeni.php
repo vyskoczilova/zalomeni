@@ -80,17 +80,19 @@ class Zalomeni {
     if (version_compare($registered_version, self::version, '<')) {
       if (version_compare($registered_version, '1.3', '<')) {
         $old_options = get_option('zalomeni_options');
-        update_option('zalomeni_prepositions',      $old_options['zalomeni_prepositions']);
-        update_option('zalomeni_prepositions_list', $old_options['zalomeni_prepositions_list']);
-        update_option('zalomeni_conjunctions',      $old_options['zalomeni_conjunctions']);
-        update_option('zalomeni_conjunctions_list', $old_options['zalomeni_conjunctions_list']);
-        if (!version_compare($registered_version, '1.1', '<')) {
-          // these options were introduced in version 1.1
-          update_option('zalomeni_abbreviations',         $old_options['zalomeni_abbreviations']);
-          update_option('zalomeni_abbreviations_list',    $old_options['zalomeni_abbreviations_list']);
-          update_option('zalomeni_space_between_numbers', $old_options['zalomeni_numbers']);
+        if (is_array($old_options)) {
+          update_option('zalomeni_prepositions',      $old_options['zalomeni_prepositions']);
+          update_option('zalomeni_prepositions_list', $old_options['zalomeni_prepositions_list']);
+          update_option('zalomeni_conjunctions',      $old_options['zalomeni_conjunctions']);
+          update_option('zalomeni_conjunctions_list', $old_options['zalomeni_conjunctions_list']);
+          if (!version_compare($registered_version, '1.1', '<')) {
+            // these options were introduced in version 1.1
+            update_option('zalomeni_abbreviations',         $old_options['zalomeni_abbreviations']);
+            update_option('zalomeni_abbreviations_list',    $old_options['zalomeni_abbreviations_list']);
+            update_option('zalomeni_space_between_numbers', $old_options['zalomeni_numbers']);
+          }
+          delete_option('zalomeni_options');
         }
-        delete_option('zalomeni_options');
       }
 
       self::add_options();
