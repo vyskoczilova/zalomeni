@@ -9,8 +9,6 @@ Author URI:	https://kybernaut.cz
 Text Domain: zalomeni
 */
 
-include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-
 class Zalomeni {
   const version = '1.5.1';
 
@@ -103,7 +101,10 @@ class Zalomeni {
   protected static $this_plugin;
   function add_settings_to_plugin_actions($links, $file) {
     // Add settings link to plugin list for this plugin
-    if (!self::$this_plugin) self::$this_plugin = plugin_basename(__FILE__);
+    if (!self::$this_plugin) {
+      include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+      self::$this_plugin = plugin_basename(__FILE__);
+    }
      if ($file == self::$this_plugin) {
       $settings_link = '<a href="options-reading.php#zalomeni_options_desc">' . __('Settings') . '</a>';
       array_unshift( $links, $settings_link ); // before other links
