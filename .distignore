@@ -13,3 +13,9 @@ output.log
 CLAUDE.md
 Makefile
 /bin
+/tests
+/vendor
+/composer.json
+/composer.lock
+/phpunit.xml
+.phpunit.result.cache

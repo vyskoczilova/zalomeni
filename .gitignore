@@ -1,2 +1,5 @@
-.vscode
+/vendor/
+/.vscode/
 .DS_Store
+composer.lock
+.phpunit.result.cache
