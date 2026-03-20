@@ -335,7 +335,10 @@ class Zalomeni {
   }
 
   static public function texturize($text) {
-    if (get_option('zalomeni_matches') == '') return $text; // no settings? then fall-back to just return the content
+    $matches = get_option('zalomeni_matches');
+    if (empty($matches)) return $text;
+    $replacements = get_option('zalomeni_replacements');
+
     $output = '';
     $curl = '';
     $textarr = preg_split('/(<.*>|\[.*\])/Us', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -350,17 +353,13 @@ class Zalomeni {
       $curl = $textarr[$i];
 
       if (!empty($curl)) {
-        global $wp_version;
         if ('<' != $curl[0] && '[' != $curl[0]
-            && empty($no_texturize_shortcodes_stack) && empty($no_texturize_tags_stack)) { // If it's not a tag
-          $result = @preg_replace(get_option('zalomeni_matches'), get_option('zalomeni_replacements'), $curl);
+            && empty($no_texturize_shortcodes_stack) && empty($no_texturize_tags_stack)) {
+          $result = @preg_replace($matches, $replacements, $curl);
           if ($result !== null) {
-            $result = @preg_replace(get_option('zalomeni_matches'), get_option('zalomeni_replacements'), $result);
+            $result = @preg_replace($matches, $replacements, $result);
           }
           $curl = ($result !== null) ? $result : $curl;
-        } else if (version_compare($wp_version, '2.9', '<')) {
-          wptexturize_pushpop_element($curl, $no_texturize_tags_stack, $no_texturize_tags, '<', '>');
-          wptexturize_pushpop_element($curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes, '[', ']');
         } else {
           _wptexturize_pushpop_element($curl, $no_texturize_tags_stack, $no_texturize_tags, '<', '>');
           _wptexturize_pushpop_element($curl, $no_texturize_shortcodes_stack, $no_texturize_shortcodes, '[', ']');
