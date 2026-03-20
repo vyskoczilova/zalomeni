@@ -1,9 +1,12 @@
 === Zalomení ===
 Contributors: vyskoczilova, honza.skypala
-Tags: grammar, Czech,
-Requires at least: 4.0
+Tags: grammar, Czech, typography, non-breaking space
+Requires at least: 6.0
 Tested up to: 6.9
 Stable tag: 1.5.1
+Requires PHP: 7.4
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 This plugin helps to keep some grammar rules in Czech language related to word wrapping, e.g. prepositions 'k', 's', 'v' and 'z' cannot be placed at the end of line.
 
@@ -14,7 +17,7 @@ For English, see below.
 
 Czech: Upravujeme-li písemný dokument, radí nám Pravidla českého pravopisu nepsat neslabičné předložky v, s, z, k na konec řádku, ale psát je na stejný řádek se slovem, které nese přízvuk (např. ve spojení k mostu, s bratrem, v Plzni, z&nbsp;nádraží). Typografické normy jsou ještě přísnější: podle některých je nepatřičné ponechat na konci řádku jakékoli jednopísmenné slovo, tedy také předložky a spojky a, i, o, u;. Někteří pisatelé dokonce nechtějí z estetických důvodů ponechávat na konci řádků jakékoli jednoslabičné výrazy (např. ve, ke, ku, že, na, do, od, pod).
 
-<a href="http://prirucka.ujc.cas.cz/?id=880" title="Více informací k problematice">Více informací</a> na webu Ústavu pro jazyk český, Akademie věd ČR.
+<a href="https://prirucka.ujc.cas.cz/?id=880" title="Více informací k problematice">Více informací</a> na webu Ústavu pro jazyk český, Akademie věd ČR.
 
 Tento plugin řeší některé z uvedených příkladů: v textu nahrazuje běžné mezery za pevné tak, aby nedošlo k zalomení řádku v nevhodném místě.
 
@@ -65,6 +68,23 @@ Poznámka: tímto způsobem můžete filtry nejen odebírat, ale také přidáva
 2. Příklad
 
 == Changelog ==
+
+= 1.5.1 =
+* Security: added sanitize callbacks to all register_setting calls
+* Security: escaped regex metacharacters in user-defined option lists (preg_quote)
+* Security: added preg_replace error handling to prevent null output
+* Security: filtered empty list items to prevent catch-all regex patterns
+* Security: escaped custom terms to prevent regex injection while preserving \d, \w, \s
+* Security: added output escaping (esc_attr, esc_js, esc_textarea) in admin settings
+* Security: replaced dynamic constant() calls with static lookup array
+* Security: inlined WP-private _wptexturize_pushpop_element function
+* Security: added direct file access guard
+* Improvement: added uninstall.php for clean option removal
+* Improvement: added GPL-2.0-or-later license header
+* Improvement: lazy-load plugin.php only on admin pages
+* Improvement: guarded pre-1.3 migration against missing options
+* Improvement: strict comparisons and PHP 8+ compatibility throughout
+* Improvement: updated minimum requirements to WordPress 6.0 and PHP 7.4
 
 = 1.5 =
 * bug fix: kompatibilita s PHP 8+
@@ -118,18 +138,4 @@ Poznámka: tímto způsobem můžete filtry nejen odebírat, ale také přidáva
 
 == Licence ==
 
-WTFPL License 2.0 applies
-
-<code>           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-                   Version 2, December 2004
-
-Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
-
-Everyone is permitted to copy and distribute verbatim or modified
-copies of this license document, and changing it is allowed as long
-as the name is changed.
-
-           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
- 0. You just DO WHAT THE FUCK YOU WANT TO.</code>
+This plugin is licensed under the GPL-2.0-or-later license. See https://www.gnu.org/licenses/gpl-2.0.html for details.

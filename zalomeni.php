@@ -87,7 +87,7 @@ class Zalomeni {
     return isset($defaults[$key]) ? $defaults[$key] : '';
   }
 
-  public static function add_options() {
+  private static function add_options() {
     add_option('zalomeni_version', self::version);
 
     add_option('zalomeni_prepositions',                 self::default_prepositions);

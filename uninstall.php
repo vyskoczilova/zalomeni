@@ -24,6 +24,7 @@ $options = array(
   'zalomeni_custom_terms',
   'zalomeni_matches',
   'zalomeni_replacements',
+  'zalomeni_options', // legacy pre-1.3 combined option
 );
 
 foreach ( $options as $option ) {
