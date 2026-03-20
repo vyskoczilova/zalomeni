@@ -6,6 +6,7 @@ Description: Puts non-breakable space after one-letter Czech prepositions like '
 Version: 1.5.1
 Author: Karolína Vyskočiová
 Author URI:	https://kybernaut.cz
+Text Domain: zalomeni
 */
 
 include_once(ABSPATH . 'wp-admin/includes/plugin.php');
@@ -37,7 +38,7 @@ class Zalomeni {
   static function activate() {
     $required_php_version = '5.3';
     if (version_compare(phpversion(), $required_php_version, '<'))
-      die(str_replace(array("%1", "%2"), array($required_php_version, phpversion()), __("Plugin Zalomení vyžaduje PHP verze %1 nebo vyšší. Na tomto webu je nainstalováno PHP verze %2", "zalomeni")));
+      wp_die(str_replace(array("%1", "%2"), array($required_php_version, phpversion()), __("Plugin Zalomení vyžaduje PHP verze %1 nebo vyšší. Na tomto webu je nainstalováno PHP verze %2", "zalomeni")));
     
     self::add_options();
   }
