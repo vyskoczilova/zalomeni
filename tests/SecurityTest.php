@@ -268,22 +268,47 @@ class SecurityTest extends TestCase {
     // =========================================================================
 
     public function test_no_catastrophic_backtracking_with_large_input(): void {
-        WP_Mock::userFunction( 'get_option' )
-            ->with( 'zalomeni_matches' )
-            ->andReturn( [
-                'words' => '@($|;| |&nbsp;|\(|\n)(k|s|v|z) @i',
-            ] );
-        WP_Mock::userFunction( 'get_option' )
-            ->with( 'zalomeni_replacements' )
-            ->andReturn( [
-                'words' => '$1$2&nbsp;',
-            ] );
+        // Use actual prepare_matches/prepare_replacements output (not hardcoded patterns)
+        $this->mock_prepare_matches_options( [
+            'zalomeni_prepositions'                 => 'on',
+            'zalomeni_prepositions_list'             => 'k, s, v, z',
+            'zalomeni_conjunctions'                  => 'on',
+            'zalomeni_conjunctions_list'              => 'a, i, o, u',
+            'zalomeni_abbreviations'                 => 'on',
+            'zalomeni_abbreviations_list'             => 'např., tj., tzv.',
+            'zalomeni_between_number_and_unit'       => 'on',
+            'zalomeni_between_number_and_unit_list'  => 'm, m², l, kg, h, °C, Kč, lidí, dní, %',
+            'zalomeni_space_between_numbers'         => 'on',
+            'zalomeni_spaces_in_scales'              => 'on',
+            'zalomeni_space_after_ordered_number'    => 'on',
+            'zalomeni_custom_terms'                  => "Formule 1\nWindows \\d\niPhone \\d",
+        ] );
+
+        $prepare_matches = new ReflectionMethod( 'Zalomeni', 'prepare_matches' );
+        $prepare_matches->setAccessible( true );
+        $matches = $prepare_matches->invoke( null );
+
+        $prepare_replacements = new ReflectionMethod( 'Zalomeni', 'prepare_replacements' );
+        $prepare_replacements->setAccessible( true );
+        $replacements = $prepare_replacements->invoke( null );
+
+        // Reset mocks — WP_Mock stacks rather than replaces
+        WP_Mock::tearDown();
+        WP_Mock::setUp();
+
+        WP_Mock::userFunction( 'get_option' )->andReturnUsing(
+            function ( $key ) use ( $matches, $replacements ) {
+                if ( $key === 'zalomeni_matches' ) return $matches;
+                if ( $key === 'zalomeni_replacements' ) return $replacements;
+                return '';
+            }
+        );
         WP_Mock::userFunction( 'apply_filters' )
             ->andReturnUsing( function ( $tag, $value ) {
                 return $value;
             } );
 
-        $large_input = str_repeat( 'v textu je mnoho slov a předložek k tomu s tím z toho ', 1000 );
+        $large_input = str_repeat( 'Dne 1. ledna v Praze k mostu s bratrem např. 5 m za 100 Kč a Formule 1 ', 1000 );
 
         $start = microtime( true );
         $result = Zalomeni::texturize( $large_input );
@@ -292,5 +317,8 @@ class SecurityTest extends TestCase {
         $this->assertNotNull( $result );
         $this->assertLessThan( 2.0, $elapsed,
             'texturize() took too long — possible catastrophic backtracking' );
+        // Verify it actually did replacements
+        $this->assertStringContainsString( 'v&nbsp;Praze', $result );
+        $this->assertStringContainsString( 'Formule&nbsp;1', $result );
     }
 }

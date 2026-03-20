@@ -19,7 +19,37 @@ class TexturizeTest extends TestCase {
     }
 
     /**
+     * Build matches/replacements arrays from options using reflection.
+     * Does not use WP_Mock — calls prepare_matches/prepare_replacements
+     * with a temporary get_option mock, then tears it down.
+     */
+    private static function build_patterns( array $options ): array {
+        // Temporarily define get_option as a plain PHP function for reflection calls
+        // We can't use WP_Mock here since we need to tear it down cleanly
+        WP_Mock::userFunction( 'get_option' )->andReturnUsing(
+            function ( $key, $default = '' ) use ( $options ) {
+                return $options[ $key ] ?? $default;
+            }
+        );
+        WP_Mock::userFunction( 'update_option' );
+
+        $prepare_matches = new ReflectionMethod( 'Zalomeni', 'prepare_matches' );
+        $prepare_matches->setAccessible( true );
+        $matches = $prepare_matches->invoke( null );
+
+        $prepare_replacements = new ReflectionMethod( 'Zalomeni', 'prepare_replacements' );
+        $prepare_replacements->setAccessible( true );
+        $replacements = $prepare_replacements->invoke( null );
+
+        return [ $matches, $replacements ];
+    }
+
+    /**
      * Helper: mock options, build matches/replacements, run texturize.
+     *
+     * Uses tearDown/setUp between phases because WP_Mock doesn't support
+     * replacing an existing mock — a second userFunction('get_option')
+     * stacks on top rather than overriding.
      */
     private function texturize_with_options( string $text, array $overrides = [] ): string {
         $defaults = [
@@ -38,23 +68,12 @@ class TexturizeTest extends TestCase {
         ];
         $options = array_merge( $defaults, $overrides );
 
-        // First call: mock for prepare_matches/prepare_replacements
-        WP_Mock::userFunction( 'get_option' )->andReturnUsing(
-            function ( $key, $default = '' ) use ( $options ) {
-                return $options[ $key ] ?? $default;
-            }
-        );
-        WP_Mock::userFunction( 'update_option' );
+        // Phase 1: build patterns (needs get_option mock for individual options)
+        list( $matches, $replacements ) = self::build_patterns( $options );
 
-        $prepare_matches = new ReflectionMethod( 'Zalomeni', 'prepare_matches' );
-        $prepare_matches->setAccessible( true );
-        $matches = $prepare_matches->invoke( null );
-
-        $prepare_replacements = new ReflectionMethod( 'Zalomeni', 'prepare_replacements' );
-        $prepare_replacements->setAccessible( true );
-        $replacements = $prepare_replacements->invoke( null );
-
-        // Reset mocks for texturize — it reads matches/replacements from options
+        // Phase 2: reset mocks and set up for texturize (needs get_option
+        // to return compiled patterns). WP_Mock requires tearDown/setUp
+        // to replace an existing mock for the same function.
         WP_Mock::tearDown();
         WP_Mock::setUp();
 
@@ -70,27 +89,6 @@ class TexturizeTest extends TestCase {
                 return $value;
             }
         );
-
-        // texturize uses global $wp_version for tag-stack handling
-        global $wp_version;
-        $wp_version = '6.5';
-
-        // Stub _wptexturize_pushpop_element (WP core function for tag tracking)
-        if ( ! function_exists( '_wptexturize_pushpop_element' ) ) {
-            function _wptexturize_pushpop_element( $text, &$stack, $disabled_elements, $opening, $closing ) {
-                $tag = trim( str_replace( $closing, '', str_replace( $opening, '', $text ) ) );
-                $tag = explode( ' ', $tag )[0]; // strip attributes
-                if ( in_array( $tag, $disabled_elements ) ) {
-                    $stack[] = $tag;
-                } elseif ( strpos( $tag, '/' ) === 0 ) {
-                    $tag = ltrim( $tag, '/' );
-                    if ( ( $key = array_search( $tag, $stack ) ) !== false ) {
-                        unset( $stack[ $key ] );
-                        $stack = array_values( $stack );
-                    }
-                }
-            }
-        }
 
         return Zalomeni::texturize( $text );
     }
