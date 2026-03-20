@@ -1,0 +1,46 @@
+Czech description for readme.txt (kept for reference / future Czech localization)
+================================================================================
+
+Czech: Upravujeme-li písemný dokument, radí nám Pravidla českého pravopisu nepsat neslabičné předložky v, s, z, k na konec řádku, ale psát je na stejný řádek se slovem, které nese přízvuk (např. ve spojení k mostu, s bratrem, v Plzni, z nádraží). Typografické normy jsou ještě přísnější: podle některých je nepatřičné ponechat na konci řádku jakékoli jednopísmenné slovo, tedy také předložky a spojky a, i, o, u;. Někteří pisatelé dokonce nechtějí z estetických důvodů ponechávat na konci řádků jakékoli jednoslabičné výrazy (např. ve, ke, ku, že, na, do, od, pod).
+
+<a href="https://prirucka.ujc.cas.cz/?id=880" title="Více informací k problematice">Více informací</a> na webu Ústavu pro jazyk český, Akademie věd ČR.
+
+Tento plugin řeší některé z uvedených příkladů: v textu nahrazuje běžné mezery za pevné tak, aby nedošlo k zalomení řádku v nevhodném místě.
+
+== Frequently Asked Questions (Czech) ==
+
+Tento plugin se aplikuje na řadu filtrů WordPressu -- obsah příspěvku, název příspěvku, název celého webu atd. Konkrétně se jedná o tyto filtry:
+
+* comment_author
+* term_name
+* link_name
+* link_description
+* link_notes
+* bloginfo
+* wp_title
+* widget_title
+* term_description
+* the_title
+* the_content
+* the_excerpt
+* comment_text
+* single_post_title
+* list_cats
+
+Některé uživatelské instalace WordPressu s tím mohou mít problém. Například se může jednat o e-shop, který používá název příspěvku jako název produktu a v něm potřebuje, aby Zalomení nebylo aplikováno; jinak chce ovšem nadále Zalomení používat.
+
+Proto přináší plugin Zalomení svůj vlastní filtr <em>zalomeni_filtry</em>. Můžete si pak do své šablony nebo do svého webu přidat funkci, v které ze seznamu filtrů odstraníte ten, u kterého nechcete Zalomení použít. Příklad zrušení aplikace Zalomení na název příspěvku:
+
+<code>add_filter('zalomeni_filtry', 'remove_title_from_zalomeni');
+function remove_title_from_zalomeni(array $filters) {
+  unset($filters['the_title']);
+  return $filters;
+}</code>
+
+Poznámka: tímto způsobem můžete filtry nejen odebírat, ale také přidávat, pokud to potřebujete.
+
+== Installation (Czech) ==
+
+1. Nahrajte kompletní adresář pluginu do wp-content/plugins.
+2. Aktivujte plugin Zalomení v administraci plug-inů.
+3. V Nastavení->Zobrazování můžete nastavit jednotlivé volby.

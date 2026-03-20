@@ -8,7 +8,7 @@
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
-$options = array(
+$zalomeni_options = array(
   'zalomeni_version',
   'zalomeni_prepositions',
   'zalomeni_prepositions_list',
@@ -27,6 +27,6 @@ $options = array(
   'zalomeni_options', // legacy pre-1.3 combined option
 );
 
-foreach ( $options as $option ) {
-  delete_option( $option );
+foreach ( $zalomeni_options as $zalomeni_option ) {
+  delete_option( $zalomeni_option );
 }

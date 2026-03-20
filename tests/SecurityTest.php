@@ -46,7 +46,7 @@ class SecurityTest extends TestCase {
 
     public function test_sanitize_text_list_strips_dangerous_characters(): void {
         WP_Mock::userFunction( 'sanitize_text_field' )->andReturnUsing( function ( $str ) {
-            return trim( strip_tags( $str ) );
+            return trim( wp_strip_all_tags( $str ) );
         } );
 
         $this->assertSame( 'k, s, v, z', Zalomeni::sanitize_text_list( 'k, s, v, z' ) );
@@ -57,7 +57,7 @@ class SecurityTest extends TestCase {
 
     public function test_sanitize_custom_terms_strips_html(): void {
         WP_Mock::userFunction( 'sanitize_textarea_field' )->andReturnUsing( function ( $str ) {
-            return trim( strip_tags( $str ) );
+            return trim( wp_strip_all_tags( $str ) );
         } );
 
         $result = Zalomeni::sanitize_custom_terms( "<script>alert('xss')</script>\nWindows \\d" );

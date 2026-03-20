@@ -8,51 +8,43 @@ Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin helps to keep some grammar rules in Czech language related to word wrapping, e.g. prepositions 'k', 's', 'v' and 'z' cannot be placed at the end of line.
+Inserts non-breaking spaces after Czech prepositions, conjunctions, and abbreviations.
 
 
 == Description ==
 
-For English, see below.
+Zalomení improves Czech typography in WordPress by inserting non-breaking spaces where line breaks are not allowed according to Czech typographic rules.
 
-Czech: Upravujeme-li písemný dokument, radí nám Pravidla českého pravopisu nepsat neslabičné předložky v, s, z, k na konec řádku, ale psát je na stejný řádek se slovem, které nese přízvuk (např. ve spojení k mostu, s bratrem, v Plzni, z&nbsp;nádraží). Typografické normy jsou ještě přísnější: podle některých je nepatřičné ponechat na konci řádku jakékoli jednopísmenné slovo, tedy také předložky a spojky a, i, o, u;. Někteří pisatelé dokonce nechtějí z estetických důvodů ponechávat na konci řádků jakékoli jednoslabičné výrazy (např. ve, ke, ku, že, na, do, od, pod).
+It handles:
 
-<a href="https://prirucka.ujc.cas.cz/?id=880" title="Více informací k problematice">Více informací</a> na webu Ústavu pro jazyk český, Akademie věd ČR.
+* **Prepositions** — single-letter prepositions like *k*, *s*, *v*, *z* must not appear at the end of a line.
+* **Conjunctions** — single-letter conjunctions like *a*, *i*, *o*, *u*.
+* **Abbreviations** — common Czech abbreviations (e.g. *např.*, *tj.*, *tzv.*).
+* **Numbers and units** — prevents breaks between a number and its unit (e.g. *5 kg*, *10 Kč*).
+* **Number formatting** — keeps formatted numbers together (e.g. phone numbers like *800 123 456*).
+* **Ordinal numbers** — prevents breaks after ordinals, especially in dates (e.g. *1. ledna*).
+* **Scales and ratios** — keeps expressions like *1 : 50 000* on one line.
+* **Custom terms** — user-defined multi-word terms that should never be broken across lines.
 
-Tento plugin řeší některé z uvedených příkladů: v textu nahrazuje běžné mezery za pevné tak, aby nedošlo k zalomení řádku v nevhodném místě.
+All options are configurable under Settings → Reading. The plugin provides a `zalomeni_filtry` filter to add or remove WordPress filters it applies to.
 
-English: This plugin helps to keep some grammar rules in Czech language related to word wrapping, e.g. prepositions 'k', 's', 'v' and 'z' cannot be placed at the end of line.
-
+For more information on Czech typographic rules, see the [Institute of the Czech Language](https://prirucka.ujc.cas.cz/?id=880).
 
 == Installation ==
 
-1.	Nahrajte kompletní adresář pluginu do wp-content/plugins.
-2.	Aktivujte plugin Zalomení v administraci plug-inů.
-3.	V Nastavení->Zobrazování můžete nastavit jednotlivé volby.
+1. Upload the plugin directory to `wp-content/plugins/`.
+2. Activate the plugin through the Plugins menu in WordPress.
+3. Configure options under Settings → Reading.
 
 == Frequently Asked Questions ==
 
-Tento plugin se aplikuje na řadu filtrů WordPressu -- obsah příspěvku, název příspěvku, název celého webu atd. Konkrétně se jedná o tyto filtry:
+= Which WordPress filters does the plugin apply to? =
 
-* comment_author
-* term_name
-* link_name
-* link_description
-* link_notes
-* bloginfo
-* wp_title
-* widget_title
-* term_description
-* the_title
-* the_content
-* the_excerpt
-* comment_text
-* single_post_title
-* list_cats
+The plugin applies to these filters by default: `comment_author`, `term_name`, `link_name`, `link_description`, `link_notes`, `bloginfo`, `wp_title`, `widget_title`, `term_description`, `the_title`, `the_content`, `the_excerpt`, `comment_text`, `single_post_title`, `list_cats`.
 
-Některé uživatelské instalace WordPressu s tím mohou mít problém. Například se může jednat o e-shop, který používá název příspěvku jako název produktu a v něm potřebuje, aby Zalomení nebylo aplikováno; jinak chce ovšem nadále Zalomení používat.
+= Can I disable the plugin for specific filters? =
 
-Proto přináší plugin Zalomení svůj vlastní filtr <em>zalomeni_filtry</em>. Můžete si pak do své šablony nebo do svého webu přidat funkci, v které ze seznamu filtrů odstraníte ten, u kterého nechcete Zalomení použít. Příklad zrušení aplikace Zalomení na název příspěvku: 
+Yes. Use the `zalomeni_filtry` filter to remove or add filters:
 
 <code>add_filter('zalomeni_filtry', 'remove_title_from_zalomeni');
 function remove_title_from_zalomeni(array $filters) {
@@ -60,12 +52,10 @@ function remove_title_from_zalomeni(array $filters) {
   return $filters;
 }</code>
 
-Poznámka: tímto způsobem můžete filtry nejen odebírat, ale také přidávat, pokud to potřebujete.
-
 == Screenshots ==
 
-1. Konfigurace pluginu
-2. Příklad
+1. Plugin settings
+2. Example output
 
 == Changelog ==
 

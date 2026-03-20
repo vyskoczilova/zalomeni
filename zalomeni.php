@@ -43,11 +43,11 @@ class Zalomeni {
     $required_php_version = '7.4';
     if ( version_compare( phpversion(), $required_php_version, '<' ) ) {
       wp_die(
-        str_replace(
+        esc_html( str_replace(
           array( '%1', '%2' ),
           array( $required_php_version, phpversion() ),
           __( 'Plugin Zalomení vyžaduje PHP verze %1 nebo vyšší. Na tomto webu je nainstalováno PHP verze %2', 'zalomeni' )
-        )
+        ) )
       );
     }
     self::add_options();
@@ -192,7 +192,7 @@ class Zalomeni {
       . checked('on', get_option("zalomeni_" . $option, self::get_default($args['option'])), false)
       . (array_key_exists('toggle_list_read_only', $args) ? ' onchange="document.getElementById(\'zalomeni_' . esc_js( $option ) . '_list\').readOnly = this.checked?\'\':\'1\';"' : '')
       . ' /> '
-      . self::texturize($args['description'])
+      . wp_kses_post( self::texturize($args['description']) )
     );
   }
 
@@ -202,13 +202,13 @@ class Zalomeni {
       '<input type="text" name="zalomeni_' . esc_attr( $option ) . '_list" id="zalomeni_' . esc_attr( $option ) . '_list" class="regular-text" value="' . esc_attr( get_option('zalomeni_' . $option . '_list', self::get_default($args['option'] . '_list')) ) . '"'
        . ((get_option("zalomeni_" . $option, self::get_default($args['option'])) !== 'on') ? ' readonly="1"' : '')
       . ' /> '
-      . self::texturize($args['description'])
+      . wp_kses_post( self::texturize($args['description']) )
     );
   }
 
   public static function settings_field_custom_terms() {
     echo(
-      self::texturize(__('Zde můžete uvést vlastní termíny, v nichž mají být mezery nahrazeny pevnými mezerami tak, aby nedošlo k zalomení uvnitř těchto výrazů. Uveďte vždy každý výraz na samostatný řádek; pokud je výraz složen z více jak dvou slov, tedy je v něm více jak jedna mezera, pak všechny mezery budou nahrazeny za pevné mezery. Lze použít výrazu \\d pro libovolnou číslici (pro pokročilé administrátory: algoritmus používá <a href="https://www.php.net/manual/en/reference.pcre.pattern.syntax.php" target="_blank">Perl Compatible Regular Expressions</a>, lze využít syntaxe této specifikace).', 'zalomeni'))
+      wp_kses_post( self::texturize(__('Zde můžete uvést vlastní termíny, v nichž mají být mezery nahrazeny pevnými mezerami tak, aby nedošlo k zalomení uvnitř těchto výrazů. Uveďte vždy každý výraz na samostatný řádek; pokud je výraz složen z více jak dvou slov, tedy je v něm více jak jedna mezera, pak všechny mezery budou nahrazeny za pevné mezery. Lze použít výrazu \\d pro libovolnou číslici (pro pokročilé administrátory: algoritmus používá <a href="https://www.php.net/manual/en/reference.pcre.pattern.syntax.php" target="_blank">Perl Compatible Regular Expressions</a>, lze využít syntaxe této specifikace).', 'zalomeni')) )
       . '<p><textarea name="zalomeni_custom_terms" id="zalomeni_custom_terms" rows="10" cols="50" class="regular-text">'
       . esc_textarea( get_option('zalomeni_custom_terms', self::default_custom_terms) )
       . '</textarea></p>'
@@ -364,9 +364,9 @@ class Zalomeni {
       '<div id="zalomeni_options_desc" style="margin:0 0 15px 10px;-webkit-border-radius:3px;border-radius:3px;border-width:1px;border-color:#e6db55;border-style:solid;float:right;background:#FFFBCC;text-align:center;width:200px">'
       . '<p style="line-height:1.5em;">Plugin <strong>Zalomení</strong><br />Autor: <a href="https://www.honza.info/" class="external" target="_blank" title="https://www.honza.info/">Honza Skýpala</a></p>'
       . '</div>'
-      . '<p>' . self::texturize(__('Upravujeme-li písemný dokument, radí nám <strong>Pravidla českého pravopisu</strong> nepsat neslabičné předložky <em>v, s, z, k</em> na konec řádku, ale psát je na stejný řádek se slovem, které nese přízvuk (např. ve spojení <em>k mostu</em>, <em>s bratrem</em>, <em>v Plzni</em>, <em>z nádraží</em>). Typografické normy jsou ještě přísnější: podle některých je nepatřičné ponechat na konci řádku jakékoli jednopísmenné slovo, tedy také předložky a spojky <em>a, i, o, u</em>;. Někteří pisatelé dokonce nechtějí z estetických důvodů ponechávat na konci řádků jakékoli jednoslabičné výrazy (např. <em>ve, ke, ku, že, na, do, od, pod</em>).', 'zalomeni')) . '</p>'
-      . '<p>' . self::texturize(__('<a href="https://prirucka.ujc.cas.cz/?id=880" class="external" target="_blank">Více informací</a> na webu Ústavu pro jazyk český, Akademie věd ČR.', 'zalomeni')) . '</p>'
-      . '<p>' . self::texturize(__('Tento plugin řeší některé z uvedených příkladů: v textu nahrazuje běžné mezery za pevné tak, aby nedošlo k zalomení řádku v nevhodném místě.', 'zalomeni')) . '</p>'
+      . '<p>' . wp_kses_post( self::texturize(__('Upravujeme-li písemný dokument, radí nám <strong>Pravidla českého pravopisu</strong> nepsat neslabičné předložky <em>v, s, z, k</em> na konec řádku, ale psát je na stejný řádek se slovem, které nese přízvuk (např. ve spojení <em>k mostu</em>, <em>s bratrem</em>, <em>v Plzni</em>, <em>z nádraží</em>). Typografické normy jsou ještě přísnější: podle některých je nepatřičné ponechat na konci řádku jakékoli jednopísmenné slovo, tedy také předložky a spojky <em>a, i, o, u</em>;. Někteří pisatelé dokonce nechtějí z estetických důvodů ponechávat na konci řádků jakékoli jednoslabičné výrazy (např. <em>ve, ke, ku, že, na, do, od, pod</em>).', 'zalomeni')) ) . '</p>'
+      . '<p>' . wp_kses_post( self::texturize(__('<a href="https://prirucka.ujc.cas.cz/?id=880" class="external" target="_blank">Více informací</a> na webu Ústavu pro jazyk český, Akademie věd ČR.', 'zalomeni')) ) . '</p>'
+      . '<p>' . wp_kses_post( self::texturize(__('Tento plugin řeší některé z uvedených příkladů: v textu nahrazuje běžné mezery za pevné tak, aby nedošlo k zalomení řádku v nevhodném místě.', 'zalomeni')) ) . '</p>'
     );
   }
 
