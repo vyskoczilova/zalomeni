@@ -3,19 +3,25 @@ Contributors: vyskoczilova, honza.skypala
 Tags: grammar, Czech, typography, non-breaking space
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 1.6.0
-Requires PHP: 7.4
+Stable tag: 2.0.0
+Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Inserts non-breaking spaces after Czech prepositions, conjunctions, and abbreviations.
+Zalomení is a Czech-typography plugin for WordPress. It inserts non-breaking spaces after one-letter prepositions, conjunctions, abbreviations, and around numbers.
 
 
 == Description ==
 
-Zalomení improves Czech typography in WordPress by inserting non-breaking spaces where line breaks are not allowed according to Czech typographic rules.
+Zalomení is a WordPress plugin that automatically applies Czech typographic rules to post content, titles, comments, and widgets. It replaces ordinary spaces with non-breaking spaces wherever Czech typography forbids a line break, so editors don't have to type them by hand.
 
-It handles:
+Although Czech is the default, the plugin is structured around editable lists of prepositions, conjunctions, and abbreviations — so it can be adapted to **Slovak** (and other closely related languages) simply by adjusting those lists in the settings.
+
+= Maintainer =
+
+Zalomení is actively maintained by [Karolína Vyskočilová](https://kybernaut.cz) (WordPress.org username: `vyskoczilova`), an independent WordPress developer based in Czechia. She took the plugin over in 2026 after three years without updates, ran a full security audit, and now ships regular releases. The plugin was originally created by Honza Skýpala, whose work is gratefully acknowledged.
+
+= What the plugin handles =
 
 * **Prepositions** — single-letter prepositions like *k*, *s*, *v*, *z* must not appear at the end of a line.
 * **Conjunctions** — single-letter conjunctions like *a*, *i*, *o*, *u*.
@@ -26,7 +32,7 @@ It handles:
 * **Scales and ratios** — keeps expressions like *1 : 50 000* on one line.
 * **Custom terms** — user-defined multi-word terms that should never be broken across lines.
 
-All options are configurable under Settings → Reading. The plugin provides a `zalomeni_filtry` filter to add or remove WordPress filters it applies to.
+All options are configurable under **Settings → Reading**. The plugin exposes a `zalomeni_filtry` filter so developers can add or remove the WordPress hooks Zalomení applies to.
 
 For more information on Czech typographic rules, see the [Institute of the Czech Language](https://prirucka.ujc.cas.cz/?id=880).
 
@@ -37,6 +43,22 @@ For more information on Czech typographic rules, see the [Institute of the Czech
 3. Configure options under Settings → Reading.
 
 == Frequently Asked Questions ==
+
+= Is Zalomení actively maintained? =
+
+Yes. The plugin returned to active development in 2026 under maintainer [Karolína Vyskočilová](https://kybernaut.cz) (`vyskoczilova` on WordPress.org). Issues and security fixes are addressed promptly.
+
+= Is the 2.0 release safe to install? =
+
+Yes. 2.0 is a security release: all user inputs are sanitized, regex inputs are escaped, admin output is escaped, and the codebase is now covered by PHPUnit tests. Updating is recommended for anyone still on 1.x.
+
+= Does it work with the block editor (Gutenberg) and Classic Editor? =
+
+Yes. Zalomení runs on WordPress output filters (`the_content`, `the_title`, `the_excerpt`, etc.), so it works regardless of which editor produced the content.
+
+= Can I use it for Slovak? =
+
+Yes. The default lists of prepositions, conjunctions, and abbreviations are Czech, but they're fully editable under Settings → Reading. Replacing the Czech entries with Slovak ones gives you a working Slovak typography filter without any code changes.
 
 = Which WordPress filters does the plugin apply to? =
 
@@ -52,6 +74,10 @@ function remove_title_from_zalomeni(array $filters) {
   return $filters;
 }</code>
 
+= What WordPress and PHP versions are required? =
+
+WordPress 6.0 or newer and PHP 7.0 or newer.
+
 == Screenshots ==
 
 1. Plugin settings
@@ -59,7 +85,7 @@ function remove_title_from_zalomeni(array $filters) {
 
 == Changelog ==
 
-= 1.6.0 =
+= 2.0.0 =
 * New maintainer: Karolína Vyskočilová (vyskoczilova)
 * Security: added sanitize callbacks to all register_setting calls
 * Security: escaped regex metacharacters in user-defined option lists (preg_quote)
@@ -76,7 +102,7 @@ function remove_title_from_zalomeni(array $filters) {
 * Improvement: lazy-load plugin.php only on admin pages
 * Improvement: guarded pre-1.3 migration against missing options
 * Improvement: strict comparisons and PHP 8+ compatibility throughout
-* Improvement: updated minimum requirements to WordPress 6.0 and PHP 7.4
+* Improvement: updated minimum requirements to WordPress 6.0 and PHP 7.0
 
 = 1.5 =
 * bug fix: kompatibilita s PHP 8+
@@ -130,7 +156,7 @@ function remove_title_from_zalomeni(array $filters) {
 
 == Upgrade Notice ==
 
-= 1.6.0 =
+= 2.0.0 =
 Security release. All user inputs are now sanitized and escaped. Update immediately.
 
 == Licence ==
