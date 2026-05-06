@@ -74,10 +74,6 @@ function remove_title_from_zalomeni(array $filters) {
   return $filters;
 }</code>
 
-= What WordPress and PHP versions are required? =
-
-WordPress 6.0 or newer and PHP 7.0 or newer.
-
 == Screenshots ==
 
 1. Plugin settings
@@ -85,7 +81,8 @@ WordPress 6.0 or newer and PHP 7.0 or newer.
 
 == Changelog ==
 
-= 2.0.0 =
+= 2.0.0 (2026-05-06) =
+
 * New maintainer: Karolína Vyskočilová (vyskoczilova)
 * Security: added sanitize callbacks to all register_setting calls
 * Security: escaped regex metacharacters in user-defined option lists (preg_quote)
