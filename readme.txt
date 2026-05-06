@@ -8,7 +8,7 @@ Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Zalomení is a Czech-typography plugin for WordPress. It inserts non-breaking spaces after one-letter prepositions, conjunctions, abbreviations, and around numbers.
+Zalomení is a WordPress plugin that inserts non-breaking spaces after Czech one-letter prepositions, conjunctions, and abbreviations.
 
 
 == Description ==
