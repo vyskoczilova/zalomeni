@@ -10,6 +10,7 @@ DOCKER_ENV
 docker_tag
 output.log
 .claude
+.vscode
 CLAUDE.md
 Makefile
 /bin
