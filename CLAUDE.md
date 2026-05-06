@@ -25,9 +25,34 @@ gh secret set SVN_USERNAME --body 'your-wporg-username'
 gh secret set SVN_PASSWORD   # prompts; do not pass --body so it stays out of shell history
 ```
 
-`SVN_USERNAME` is your wordpress.org login (the slug, not email); `SVN_PASSWORD` is your wordpress.org account password — wp.org has no per-plugin token.
+`SVN_USERNAME` is your wordpress.org login slug (e.g. `vyskoczilova`, not the email).
+
+`SVN_PASSWORD` is **not** your wordpress.org account password. As of 2025, wp.org issues a separate SVN-only password that you generate at https://profiles.wordpress.org/me/profile/edit/group/3/?screen=svn-password — it's shown once, save it to your password manager. Trying to use the regular account password will silently fail with `403 Forbidden` from SVN.
 
 To cut a release: bump version (see checklist above) → commit → `gh release create vX.Y.Z --generate-notes`. The workflow does the rest.
+
+### First-time / manual SVN push
+
+When the GitHub Actions deploy isn't an option (initial submission, recovery from a stuck workflow, or a wp.org review-team requested re-upload), push directly via SVN:
+
+```bash
+svn checkout https://plugins.svn.wordpress.org/zalomeni/ /tmp/zalomeni-svn
+
+# trunk gets the dist payload (filtered through .distignore)
+rsync -a --delete --exclude-from=.distignore --exclude='.git' ./ /tmp/zalomeni-svn/trunk/
+
+# assets/ gets banners, icons, screenshots from .wordpress-org/
+rsync -a .wordpress-org/ /tmp/zalomeni-svn/assets/
+
+cd /tmp/zalomeni-svn
+svn add --force trunk/* assets/*
+svn status                                  # verify before committing
+svn commit -m "X.Y.Z — short description" --username vyskoczilova --password '...'
+
+# tag the release (wp.org convention)
+svn copy trunk tags/X.Y.Z
+svn commit -m "Tag X.Y.Z" --username vyskoczilova --password '...'
+```
 
 ## Distribution Payload
 
