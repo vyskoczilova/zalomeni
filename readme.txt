@@ -48,6 +48,10 @@ For more information on Czech typographic rules, see the [Institute of the Czech
 
 Yes. The plugin returned to active development in 2026 under maintainer [Karolína Vyskočilová](https://kybernaut.cz) (`vyskoczilova` on WordPress.org). Issues and security fixes are addressed promptly.
 
+= Where do I report security bugs found in this plugin? =
+
+Please report security bugs found in the source code of the Zalomení plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/9e5fc6bf-7462-4a23-a890-9bf16e3d30ca). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
+
 = Is the 2.0 release safe to install? =
 
 Yes. 2.0 is a security release: all user inputs are sanitized, regex inputs are escaped, admin output is escaped, and the codebase is now covered by PHPUnit tests. Updating is recommended for anyone still on 1.x.
