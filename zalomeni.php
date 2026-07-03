@@ -114,15 +114,15 @@ class Zalomeni {
       if (version_compare($registered_version, '1.3', '<')) {
         $old_options = get_option('zalomeni_options');
         if (is_array($old_options)) {
-          update_option('zalomeni_prepositions',      $old_options['zalomeni_prepositions']);
-          update_option('zalomeni_prepositions_list', $old_options['zalomeni_prepositions_list']);
-          update_option('zalomeni_conjunctions',      $old_options['zalomeni_conjunctions']);
-          update_option('zalomeni_conjunctions_list', $old_options['zalomeni_conjunctions_list']);
+          update_option('zalomeni_prepositions',      $old_options['zalomeni_prepositions'] ?? self::default_prepositions);
+          update_option('zalomeni_prepositions_list', $old_options['zalomeni_prepositions_list'] ?? self::default_prepositions_list);
+          update_option('zalomeni_conjunctions',      $old_options['zalomeni_conjunctions'] ?? self::default_conjunctions);
+          update_option('zalomeni_conjunctions_list', $old_options['zalomeni_conjunctions_list'] ?? self::default_conjunctions_list);
           if (!version_compare($registered_version, '1.1', '<')) {
             // these options were introduced in version 1.1
-            update_option('zalomeni_abbreviations',         $old_options['zalomeni_abbreviations']);
-            update_option('zalomeni_abbreviations_list',    $old_options['zalomeni_abbreviations_list']);
-            update_option('zalomeni_space_between_numbers', $old_options['zalomeni_numbers']);
+            update_option('zalomeni_abbreviations',         $old_options['zalomeni_abbreviations'] ?? self::default_abbreviations);
+            update_option('zalomeni_abbreviations_list',    $old_options['zalomeni_abbreviations_list'] ?? self::default_abbreviations_list);
+            update_option('zalomeni_space_between_numbers', $old_options['zalomeni_numbers'] ?? self::default_space_between_numbers);
           }
           delete_option('zalomeni_options');
         }
@@ -245,8 +245,13 @@ class Zalomeni {
   }
 
   public static function update_matches_and_replacements() {
-    update_option('zalomeni_matches', self::prepare_matches());
-    update_option('zalomeni_replacements', self::prepare_replacements());
+    $matches = self::prepare_matches();
+    // preg_replace() pairs pattern/replacement arrays by position, not by key.
+    // A replacement without a matching pattern (e.g. checkbox on, list emptied)
+    // would shift every following replacement onto the wrong pattern.
+    $replacements = array_intersect_key(self::prepare_replacements(), $matches);
+    update_option('zalomeni_matches', $matches);
+    update_option('zalomeni_replacements', $replacements);
   }
 
   private static function prepare_matches() {
