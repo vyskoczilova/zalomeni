@@ -20,6 +20,9 @@ class Zalomeni {
 
   public function __construct() {
     register_activation_hook(__FILE__, array(__CLASS__, 'activate'));
+    // Registered unconditionally so option updates outside wp-admin
+    // (WP-CLI, REST) also regenerate the compiled pattern cache.
+    $this->add_update_option_hooks();
     if (is_admin()) {
       add_action('admin_init', array($this, 'admin_init'));
     } else {
@@ -181,8 +184,6 @@ class Zalomeni {
     if ( empty( get_option('zalomeni_matches') ) ) {
       self::update_matches_and_replacements();
     }
-
-    $this->add_update_option_hooks();
   }
 
   public static function settings_field_checkbox(array $args) {
@@ -240,13 +241,27 @@ class Zalomeni {
                    'update_option_zalomeni_space_after_ordered_number',
                    'update_option_zalomeni_spaces_in_scales',
                    'update_option_zalomeni_custom_terms') as $i) {
-      add_action($i, array(__CLASS__, 'update_matches_and_replacements'));
+      add_action($i, array(__CLASS__, 'schedule_update_matches_and_replacements'));
+    }
+  }
+
+  /**
+   * Saving the settings page updates each changed option separately, firing
+   * one update_option_* action per option. Regenerating on every firing
+   * recompiled the patterns up to 12 times per save (and mid-save, from a
+   * mix of old and new values). Defer a single regeneration to shutdown,
+   * after all options have been written.
+   */
+  public static function schedule_update_matches_and_replacements() {
+    if (!has_action('shutdown', array(__CLASS__, 'update_matches_and_replacements'))) {
+      add_action('shutdown', array(__CLASS__, 'update_matches_and_replacements'));
     }
   }
 
   public static function update_matches_and_replacements() {
     update_option('zalomeni_matches', self::prepare_matches());
     update_option('zalomeni_replacements', self::prepare_replacements());
+    self::flush_pattern_cache();
   }
 
   private static function prepare_matches() {
@@ -384,10 +399,24 @@ class Zalomeni {
     }
   }
 
+  private static $pattern_cache = null;
+
+  public static function flush_pattern_cache() {
+    self::$pattern_cache = null;
+  }
+
   public static function texturize($text) {
-    $matches = get_option('zalomeni_matches');
+    // texturize() runs for every title, excerpt, comment, etc. on a page;
+    // read the compiled patterns once per request instead of per call.
+    if (self::$pattern_cache === null) {
+      $compiled_matches = get_option('zalomeni_matches');
+      self::$pattern_cache = array(
+        $compiled_matches,
+        empty($compiled_matches) ? array() : get_option('zalomeni_replacements'),
+      );
+    }
+    list($matches, $replacements) = self::$pattern_cache;
     if (empty($matches)) return $text;
-    $replacements = get_option('zalomeni_replacements');
 
     $output = '';
     $curl = '';
@@ -406,8 +435,14 @@ class Zalomeni {
         if ('<' !== $curl[0] && '[' !== $curl[0]
             && empty($no_texturize_shortcodes_stack) && empty($no_texturize_tags_stack)) {
           $result = @preg_replace($matches, $replacements, $curl);
-          if ($result !== null) {
-            $result = @preg_replace($matches, $replacements, $result);
+          // A second pass resolves chained matches ("800 123 456") where the
+          // first pass consumed the shared digit. Only needed when the first
+          // pass actually changed something.
+          if ($result !== null && $result !== $curl) {
+            $second = @preg_replace($matches, $replacements, $result);
+            if ($second !== null) {
+              $result = $second;
+            }
           }
           $curl = ($result !== null) ? $result : $curl;
         } else {

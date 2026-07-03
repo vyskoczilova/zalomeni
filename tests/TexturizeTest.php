@@ -12,6 +12,9 @@ class TexturizeTest extends TestCase {
 
     public function setUp(): void {
         WP_Mock::setUp();
+        // texturize() caches compiled patterns per request; each test mocks
+        // different options, so the cache must not leak between tests.
+        Zalomeni::flush_pattern_cache();
     }
 
     public function tearDown(): void {
