@@ -182,7 +182,19 @@ class Zalomeni {
       self::update_matches_and_replacements();
     }
 
+    add_action('admin_footer-options-reading.php', array(__CLASS__, 'print_settings_toggle_script'));
+
     $this->add_update_option_hooks();
+  }
+
+  public static function print_settings_toggle_script() {
+    $script = "document.querySelectorAll('input[data-zalomeni-toggle]').forEach(function (checkbox) {"
+      . "checkbox.addEventListener('change', function () {"
+      . "var list = document.getElementById(checkbox.getAttribute('data-zalomeni-toggle'));"
+      . "if (list) { list.readOnly = !checkbox.checked; }"
+      . "});"
+      . "});";
+    wp_print_inline_script_tag($script);
   }
 
   public static function settings_field_checkbox(array $args) {
@@ -190,7 +202,7 @@ class Zalomeni {
     echo(
       '<input type="checkbox" name="zalomeni_' . esc_attr( $option ) . '" id="zalomeni_' . esc_attr( $option ) . '" value="on" '
       . checked('on', get_option("zalomeni_" . $option, self::get_default($args['option'])), false)
-      . (array_key_exists('toggle_list_read_only', $args) ? ' onchange="document.getElementById(\'zalomeni_' . esc_js( $option ) . '_list\').readOnly = this.checked?\'\':\'1\';"' : '')
+      . (array_key_exists('toggle_list_read_only', $args) ? ' data-zalomeni-toggle="zalomeni_' . esc_attr( $option ) . '_list"' : '')
       . ' /> '
       . wp_kses_post( self::texturize($args['description']) )
     );
@@ -208,7 +220,7 @@ class Zalomeni {
 
   public static function settings_field_custom_terms() {
     echo(
-      wp_kses_post( self::texturize(__('Zde můžete uvést vlastní termíny, v nichž mají být mezery nahrazeny pevnými mezerami tak, aby nedošlo k zalomení uvnitř těchto výrazů. Uveďte vždy každý výraz na samostatný řádek; pokud je výraz složen z více jak dvou slov, tedy je v něm více jak jedna mezera, pak všechny mezery budou nahrazeny za pevné mezery. Lze použít výrazu \\d pro libovolnou číslici (pro pokročilé administrátory: algoritmus používá <a href="https://www.php.net/manual/en/reference.pcre.pattern.syntax.php" target="_blank">Perl Compatible Regular Expressions</a>, lze využít syntaxe této specifikace).', 'zalomeni')) )
+      wp_kses_post( self::texturize(__('Zde můžete uvést vlastní termíny, v nichž mají být mezery nahrazeny pevnými mezerami tak, aby nedošlo k zalomení uvnitř těchto výrazů. Uveďte vždy každý výraz na samostatný řádek; pokud je výraz složen z více jak dvou slov, tedy je v něm více jak jedna mezera, pak všechny mezery budou nahrazeny za pevné mezery. Lze použít výrazu \\d pro libovolnou číslici a obdobných zkratek \\w (písmeno či číslice) a \\s (bílý znak); ostatní speciální znaky regulárních výrazů jsou z bezpečnostních důvodů chápány doslovně.', 'zalomeni')) )
       . '<p><textarea name="zalomeni_custom_terms" id="zalomeni_custom_terms" rows="10" cols="50" class="regular-text">'
       . esc_textarea( get_option('zalomeni_custom_terms', self::default_custom_terms) )
       . '</textarea></p>'
