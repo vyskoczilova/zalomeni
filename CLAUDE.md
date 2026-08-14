@@ -2,8 +2,8 @@
 
 ## Before Release
 
-- [ ] Run `wp plugin check zalomeni --severity=error` (Plugin Check / PCP) and fix any errors. Warnings on dev files (`.distignore`, `.github`, `CLAUDE.md`, `tests/`, `.phpunit.result.cache`) are expected — PCP scans the working tree, not the dist payload, and `.distignore` excludes them all from the actual WP.org release. The two `no_texturize_tags` / `no_texturize_shortcodes` warnings on `zalomeni.php:397-398` are intentional reads of WordPress core filters and can also be ignored.
-- [ ] Run `vendor/bin/phpunit` — all 60 tests must pass
+- [ ] Run `wp plugin check zalomeni --severity=error` (Plugin Check / PCP) and fix any errors. Warnings on dev files (`.distignore`, `.gitignore`, `.github`, `.claude`, `CLAUDE.md`, `tests/`) are expected — PCP scans the working tree, not the dist payload, and `.distignore` excludes them all from the actual WP.org release. The two `no_texturize_tags` / `no_texturize_shortcodes` warnings on `zalomeni.php:403-404` are intentional reads of WordPress core filters and can also be ignored.
+- [ ] Run `vendor/bin/phpunit` — all 63 tests must pass
 - [ ] Test on a live WordPress install (activate, check Settings → Reading, verify non-breaking spaces in post content)
 - [ ] Verify the admin credit box displays correctly
 - [ ] Validate `readme.txt` at https://wordpress.org/plugins/developers/readme-validator/
@@ -78,7 +78,7 @@ Tests use WP_Mock (`10up/wp_mock ^1.0`) with PHPUnit 9.6 and require PHP 7.4+ to
 
 - `zalomeni.php` — main plugin file (single-file plugin)
 - `uninstall.php` — cleans up all options on plugin deletion
-- `tests/` — PHPUnit tests (SecurityTest + TexturizeTest, 60 tests / 114 assertions)
+- `tests/` — PHPUnit tests (SecurityTest + TexturizeTest, 63 tests / 124 assertions)
 - `readme.txt` — WordPress.org readme (must be in English)
 - `description-cs.txt` — original Czech description (dev reference, excluded from dist)
 - `.distignore` — files excluded from the WordPress.org SVN/ZIP distribution

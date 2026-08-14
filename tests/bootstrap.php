@@ -20,6 +20,7 @@ WP_Mock::userFunction( 'get_option' )->andReturn( '' );
 if ( ! function_exists( 'wp_strip_all_tags' ) ) {
     function wp_strip_all_tags( $text, $remove_breaks = false ) {
         $text = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $text );
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- this IS the wp_strip_all_tags polyfill; calling it here would recurse.
         $text = strip_tags( $text );
         if ( $remove_breaks ) {
             $text = preg_replace( '/[\r\n\t ]+/', ' ', $text );
