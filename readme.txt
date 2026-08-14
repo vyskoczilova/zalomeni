@@ -1,9 +1,9 @@
 === Zalomení ===
 Contributors: vyskoczilova, honza.skypala
-Tags: grammar, Czech, typography, non-breaking space
+Tags: grammar, Czech, typography, space
 Requires at least: 6.0
-Tested up to: 7.0
-Stable tag: 2.0.0
+Tested up to: 7.1
+Stable tag: 2.0.1
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -85,6 +85,12 @@ function remove_title_from_zalomeni(array $filters) {
 
 == Changelog ==
 
+= 2.0.1 (2026-08-14) =
+
+* Fix: no longer inserts a non-breaking space after an apostrophe entity, so English possessives like "America's Response" are left alone (reported by Juraj Kopčan)
+* Fix: prepositions at the very start of a paragraph now get a non-breaking space (the leading-boundary anchor never matched)
+* Tested up to WordPress 7.1
+
 = 2.0.0 (2026-05-06) =
 
 * New maintainer: Karolína Vyskočilová (vyskoczilova)
@@ -156,6 +162,9 @@ function remove_title_from_zalomeni(array $filters) {
 * Initial release.
 
 == Upgrade Notice ==
+
+= 2.0.1 =
+Fixes a stray non-breaking space in English possessives ("America's") and adds the missing one at paragraph starts.
 
 = 2.0.0 =
 Security release. All user inputs are now sanitized and escaped. Update immediately.

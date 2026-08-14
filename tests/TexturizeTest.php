@@ -120,22 +120,52 @@ class TexturizeTest extends TestCase {
     }
 
     public function test_preposition_case_insensitive(): void {
-        // The regex requires a preceding boundary (space, ;, newline, etc.)
-        // At absolute start of string, "V" has no preceding boundary so it won't match
         $result = $this->texturize_with_options( 'Jdu V lese. K večeru se ochladilo.' );
         $this->assertStringContainsString( 'V&nbsp;lese', $result );
         $this->assertStringContainsString( 'K&nbsp;večeru', $result );
     }
 
-    public function test_preposition_at_start_of_text_no_match(): void {
+    public function test_preposition_at_start_of_text_gets_nbsp(): void {
+        // The leading alternative used to be `$` (end of string), which never matched
+        // here, so a preposition opening a paragraph got no nbsp at all.
         $result = $this->texturize_with_options( 'V lese' );
-        // No preceding boundary at absolute start — regex does not match
-        $this->assertSame( 'V lese', $result );
+        $this->assertSame( 'V&nbsp;lese', $result );
     }
 
     public function test_preposition_after_semicolon(): void {
         $result = $this->texturize_with_options( 'text; v lese' );
         $this->assertStringContainsString( 'v&nbsp;lese', $result );
+    }
+
+    public function test_apostrophe_entity_does_not_get_nbsp(): void {
+        // wptexturize rewrites "America's" as "America&#8217;s" before this filter runs.
+        // The `;` used to read as a word boundary, so the possessive "s" was treated as
+        // a standalone Czech preposition.
+        $result = $this->texturize_with_options(
+            'Studie s názvem America&#8217;s Response vyšla minulý týden.'
+        );
+        $this->assertStringContainsString( 'America&#8217;s Response', $result );
+        $this->assertStringNotContainsString( 's&nbsp;Response', $result );
+        // The genuine preposition in the same sentence still gets its nbsp
+        $this->assertStringContainsString( 's&nbsp;názvem', $result );
+    }
+
+    public function test_apostrophe_entity_variants_do_not_get_nbsp(): void {
+        foreach ( [ '&#8217;', '&#39;', '&#039;', '&rsquo;', '&apos;', '&#x2019;' ] as $entity ) {
+            $result = $this->texturize_with_options( 'Byl to Jan' . $entity . 's vůz.' );
+            $this->assertStringNotContainsString(
+                's&nbsp;vůz',
+                $result,
+                'Entity ' . $entity . ' should not act as a word boundary'
+            );
+        }
+    }
+
+    public function test_czech_opening_quote_entity_still_gets_nbsp(): void {
+        // Regression guard for keeping `;` as a boundary: the Czech opening quote „
+        // becomes &#8222; and sits directly against the preposition with no space.
+        $result = $this->texturize_with_options( 'Řekl: &#8222;V lese žije liška.&#8220;' );
+        $this->assertStringContainsString( '&#8222;V&nbsp;lese', $result );
     }
 
     public function test_word_containing_v_not_affected(): void {

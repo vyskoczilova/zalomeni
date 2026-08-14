@@ -3,7 +3,7 @@
  * Plugin Name: Zalomení
  * Plugin URI:  https://wordpress.org/plugins/zalomeni/
  * Description: Puts non-breakable space after one-letter Czech prepositions like 'k', 's', 'v' or 'z'.
- * Version:     2.0.0
+ * Version:     2.0.1
  * Author:      Karolína Vyskočilová
  * Author URI:  https://kybernaut.cz
  * Text Domain: zalomeni
@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) || exit;
 
 class Zalomeni {
-  const version = '2.0.0';
+  const version = '2.0.1';
 
   public function __construct() {
     register_activation_hook(__FILE__, array(__CLASS__, 'activate'));
@@ -264,7 +264,13 @@ class Zalomeni {
       }
     }
     if ($word_matches !== '') {
-      $return_array['words'] = '@($|;| |&nbsp;|\(|\n)('.$word_matches.') @i';
+      // A semicolon counts as a leading boundary so prepositions glued to an HTML entity
+      // still get a non-breaking space -- typically the Czech opening quote, `&#8222;V lese`.
+      // Apostrophe entities are excluded: wptexturize turns "America's" into
+      // "America&#8217;s", and without this the trailing "s" would be mistaken for a
+      // standalone preposition. Each lookbehind must stay a fixed-length literal (PCRE).
+      $no_apostrophe = '(?<!&#8217;)(?<!&#39;)(?<!&#039;)(?<!&rsquo;)(?<!&apos;)(?<!&#x2019;)(?<!&#x27;)';
+      $return_array['words'] = '@(^|;| |&nbsp;|\(|\n)'.$no_apostrophe.'('.$word_matches.') @i';
     }
 
     $word_matches = '';
