@@ -1,6 +1,6 @@
 === Zalomení ===
 Contributors: vyskoczilova, honza.skypala
-Tags: grammar, Czech, typography, space
+Tags: czech, slovak, typography, space
 Requires at least: 6.0
 Tested up to: 7.1
 Stable tag: 2.0.1
@@ -19,7 +19,7 @@ Although Czech is the default, the plugin is structured around editable lists of
 
 = Maintainer =
 
-Zalomení is actively maintained by [Karolína Vyskočilová](https://kybernaut.cz) (WordPress.org username: `vyskoczilova`), an independent WordPress developer based in Czechia. She took the plugin over in 2026 after three years without updates, ran a full security audit, and now ships regular releases. The plugin was originally created by Honza Skýpala, whose work is gratefully acknowledged.
+Zalomení is maintained by [Karolína Vyskočilová](https://kybernaut.cz), an independent WordPress developer based in Czechia, who took the plugin over in 2026 and ran a full security audit. The plugin was originally created by Honza Skýpala, whose work is gratefully acknowledged.
 
 = What the plugin handles =
 
@@ -52,13 +52,17 @@ Yes. The plugin returned to active development in 2026 under maintainer [Karolí
 
 Please report security bugs found in the source code of the Zalomení plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/9e5fc6bf-7462-4a23-a890-9bf16e3d30ca). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 
-= Is the 2.0 release safe to install? =
+= What changed in 2.0? =
 
-Yes. 2.0 is a security release: all user inputs are sanitized, regex inputs are escaped, admin output is escaped, and the codebase is now covered by PHPUnit tests. Updating is recommended for anyone still on 1.x.
+2.0 i a huge security release by a new maintainer: all user inputs are sanitized, regex inputs are escaped, admin output is escaped, and the codebase is now covered by PHPUnit tests. Updating is recommended for anyone still on 1.x.
 
 = Does it work with the block editor (Gutenberg) and Classic Editor? =
 
 Yes. Zalomení runs on WordPress output filters (`the_content`, `the_title`, `the_excerpt`, etc.), so it works regardless of which editor produced the content.
+
+= Does it change the content stored in my database? =
+
+No. Zalomení hooks WordPress output filters, so it rewrites content on the way to the browser only. Your posts stay exactly as you wrote them, and deactivating the plugin removes every inserted non-breaking space.
 
 = Can I use it for Slovak? =
 
@@ -89,7 +93,6 @@ function remove_title_from_zalomeni(array $filters) {
 
 * Fix: no longer inserts a non-breaking space after an apostrophe entity, so English possessives like "America's Response" are left alone (reported by Juraj Kopčan)
 * Fix: prepositions at the very start of a paragraph now get a non-breaking space (the leading-boundary anchor never matched)
-* Tested up to WordPress 7.1
 
 = 2.0.0 (2026-05-06) =
 
@@ -168,7 +171,3 @@ Fixes a stray non-breaking space in English possessives ("America's") and adds t
 
 = 2.0.0 =
 Security release. All user inputs are now sanitized and escaped. Update immediately.
-
-== Licence ==
-
-This plugin is licensed under the GPL-2.0-or-later license. See https://www.gnu.org/licenses/gpl-2.0.html for details.
