@@ -3,7 +3,7 @@
 ## Before Release
 
 - [ ] Run `wp plugin check zalomeni --severity=error` (Plugin Check / PCP) and fix any errors. Warnings on dev files (`.distignore`, `.gitignore`, `.github`, `.claude`, `CLAUDE.md`, `tests/`) are expected — PCP scans the working tree, not the dist payload, and `.distignore` excludes them all from the actual WP.org release. The two `no_texturize_tags` / `no_texturize_shortcodes` warnings on `zalomeni.php:403-404` are intentional reads of WordPress core filters and can also be ignored.
-- [ ] Run `vendor/bin/phpunit` — all 63 tests must pass
+- [ ] Run `vendor/bin/phpunit` — all 67 tests must pass
 - [ ] Test on a live WordPress install (activate, check Settings → Reading, verify non-breaking spaces in post content)
 - [ ] Verify the admin credit box displays correctly
 - [ ] Validate `readme.txt` at https://wordpress.org/plugins/developers/readme-validator/

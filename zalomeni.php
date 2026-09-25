@@ -3,7 +3,7 @@
  * Plugin Name: Zalomení
  * Plugin URI:  https://wordpress.org/plugins/zalomeni/
  * Description: Puts non-breakable space after one-letter Czech prepositions like 'k', 's', 'v' or 'z'.
- * Version:     2.0.1
+ * Version:     2.1.0
  * Author:      Karolína Vyskočilová
  * Author URI:  https://kybernaut.cz
  * Text Domain: zalomeni
@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) || exit;
 
 class Zalomeni {
-  const version = '2.0.1';
+  const version = '2.1.0';
 
   public function __construct() {
     register_activation_hook(__FILE__, array(__CLASS__, 'activate'));
@@ -30,11 +30,24 @@ class Zalomeni {
   public function add_filters() {
     $zalomeni_matches = get_option('zalomeni_matches');
     if (!empty($zalomeni_matches)) {
-      $filters = array('comment_author', 'term_name', 'link_name', 'link_description', 'link_notes', 'bloginfo', 'wp_title', 'widget_title', 'term_description', 'the_title', 'the_content', 'the_excerpt', 'comment_text', 'single_post_title', 'list_cats');
+      // 'acf_the_content' is the filter Advanced Custom Fields runs its wysiwyg
+      // fields through instead of 'the_content', so theme content built from ACF
+      // fields is covered too.
+      $filters = array('comment_author', 'term_name', 'link_name', 'link_description', 'link_notes', 'bloginfo', 'wp_title', 'widget_title', 'term_description', 'the_title', 'the_content', 'the_excerpt', 'comment_text', 'single_post_title', 'list_cats', 'acf_the_content');
       $filters = array_combine($filters, $filters);
       $filters = apply_filters('zalomeni_filtry', $filters);
       foreach ($filters as $filter) {
         add_filter($filter, array(__CLASS__, 'texturize'));
+      }
+
+      // ACF text and textarea fields never pass through a content filter -- the
+      // theme prints them on its own, usually escaped. They get the character
+      // variant, see texturize_plain().
+      $acf_filters = array('acf/format_value/type=text', 'acf/format_value/type=textarea');
+      $acf_filters = array_combine($acf_filters, $acf_filters);
+      $acf_filters = apply_filters('zalomeni_acf_filtry', $acf_filters);
+      foreach ($acf_filters as $filter) {
+        add_filter($filter, array(__CLASS__, 'texturize_plain'));
       }
     }
   }
@@ -388,6 +401,26 @@ class Zalomeni {
         $stack = array_values( $stack );
       }
     }
+  }
+
+  /**
+   * Non-breaking spaces for values the theme prints itself, not through a content filter.
+   *
+   * texturize() inserts the `&nbsp;` entity, which is what HTML content filters
+   * want. Values of ACF text and textarea fields are usually escaped by the theme
+   * (esc_html(), esc_attr()) before they reach the page, and the entity would then
+   * show up as a literal `&nbsp;`. The non-breaking space character (U+00A0)
+   * survives escaping and renders the same.
+   *
+   * @param mixed $value Field value. Anything that is not a string is returned untouched.
+   * @return mixed
+   */
+  public static function texturize_plain($value) {
+    if (!is_string($value) || $value === '') {
+      return $value;
+    }
+
+    return str_replace('&nbsp;', "\xC2\xA0", self::texturize($value));
   }
 
   public static function texturize($text) {

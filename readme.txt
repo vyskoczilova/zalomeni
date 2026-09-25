@@ -2,8 +2,8 @@
 Contributors: vyskoczilova, honza.skypala
 Tags: czech, slovak, typography, space
 Requires at least: 6.0
-Tested up to: 7.1
-Stable tag: 2.0.1
+Tested up to: 7.1.2
+Stable tag: 2.1.0
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,6 +14,8 @@ Zalomení is a typography plugin that inserts non-breaking spaces after Czech on
 == Description ==
 
 Zalomení is a WordPress plugin that automatically applies Czech typographic rules to post content, titles, comments, and widgets. It replaces ordinary spaces with non-breaking spaces wherever Czech typography forbids a line break, so editors don't have to type them by hand.
+
+Content built with Advanced Custom Fields is covered as well, including plain text and textarea fields that themes print on their own.
 
 Although Czech is the default, the plugin is structured around editable lists of prepositions, conjunctions, and abbreviations — so it can be adapted to **Slovak** (and other closely related languages) simply by adjusting those lists in the settings.
 
@@ -68,9 +70,17 @@ No. Zalomení hooks WordPress output filters, so it rewrites content on the way 
 
 Yes. The default lists of prepositions, conjunctions, and abbreviations are Czech, but they're fully editable under Settings → Reading. Replacing the Czech entries with Slovak ones gives you a working Slovak typography filter without any code changes.
 
+= Does it work with Advanced Custom Fields (ACF)? =
+
+Yes. Wysiwyg fields run through ACF's own `acf_the_content` filter instead of `the_content`, so the plugin hooks that one too. Text and textarea fields never pass through any content filter — the theme prints them itself — so the plugin hooks `acf/format_value/type=text` and `acf/format_value/type=textarea`.
+
+Themes usually escape those values with `esc_html()`, which would turn a `&nbsp;` entity into visible text. For that reason text and textarea fields get the non-breaking space character (U+00A0) instead of the entity. It renders the same and survives escaping.
+
 = Which WordPress filters does the plugin apply to? =
 
-The plugin applies to these filters by default: `comment_author`, `term_name`, `link_name`, `link_description`, `link_notes`, `bloginfo`, `wp_title`, `widget_title`, `term_description`, `the_title`, `the_content`, `the_excerpt`, `comment_text`, `single_post_title`, `list_cats`.
+The plugin applies to these filters by default: `comment_author`, `term_name`, `link_name`, `link_description`, `link_notes`, `bloginfo`, `wp_title`, `widget_title`, `term_description`, `the_title`, `the_content`, `the_excerpt`, `comment_text`, `single_post_title`, `list_cats`, `acf_the_content`.
+
+Fields of Advanced Custom Fields are covered as well — see the ACF question below.
 
 = Can I disable the plugin for specific filters? =
 
@@ -82,12 +92,26 @@ function remove_title_from_zalomeni(array $filters) {
   return $filters;
 }</code>
 
+The ACF field filters have their own list, `zalomeni_acf_filtry`, which works the same way:
+
+<code>add_filter('zalomeni_acf_filtry', 'remove_acf_textarea_from_zalomeni');
+function remove_acf_textarea_from_zalomeni(array $filters) {
+  unset($filters['acf/format_value/type=textarea']);
+  return $filters;
+}</code>
+
 == Screenshots ==
 
 1. Plugin settings
 2. Example output
 
 == Changelog ==
+
+= 2.1.0 (2026-09-25) =
+
+* New: fields of Advanced Custom Fields are handled too — wysiwyg fields through `acf_the_content`, text and textarea fields through `acf/format_value`
+* New: `zalomeni_acf_filtry` filter to change the list of ACF filters the plugin hooks
+* Text and textarea fields get the non-breaking space character instead of the `&nbsp;` entity, so it survives escaping in the theme
 
 = 2.0.1 (2026-08-14) =
 

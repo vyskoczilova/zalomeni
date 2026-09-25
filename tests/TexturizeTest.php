@@ -93,6 +93,48 @@ class TexturizeTest extends TestCase {
         return Zalomeni::texturize( $text );
     }
 
+    /**
+     * Same as texturize_with_options(), only through the plain-text variant
+     * used for ACF text and textarea fields.
+     */
+    private function texturize_plain_with_options( $value, array $overrides = [] ) {
+        $defaults = [
+            'zalomeni_prepositions'                 => Zalomeni::default_prepositions,
+            'zalomeni_prepositions_list'             => Zalomeni::default_prepositions_list,
+            'zalomeni_conjunctions'                  => Zalomeni::default_conjunctions,
+            'zalomeni_conjunctions_list'              => Zalomeni::default_conjunctions_list,
+            'zalomeni_abbreviations'                 => Zalomeni::default_abbreviations,
+            'zalomeni_abbreviations_list'             => Zalomeni::default_abbreviations_list,
+            'zalomeni_between_number_and_unit'       => Zalomeni::default_between_number_and_unit,
+            'zalomeni_between_number_and_unit_list'  => Zalomeni::default_between_number_and_unit_list,
+            'zalomeni_space_between_numbers'         => Zalomeni::default_space_between_numbers,
+            'zalomeni_spaces_in_scales'              => Zalomeni::default_spaces_in_scales,
+            'zalomeni_space_after_ordered_number'    => Zalomeni::default_space_after_ordered_number,
+            'zalomeni_custom_terms'                  => Zalomeni::default_custom_terms,
+        ];
+        $options = array_merge( $defaults, $overrides );
+
+        list( $matches, $replacements ) = self::build_patterns( $options );
+
+        WP_Mock::tearDown();
+        WP_Mock::setUp();
+
+        WP_Mock::userFunction( 'get_option' )->andReturnUsing(
+            function ( $key, $default = '' ) use ( $matches, $replacements ) {
+                if ( $key === 'zalomeni_matches' ) return $matches;
+                if ( $key === 'zalomeni_replacements' ) return $replacements;
+                return $default;
+            }
+        );
+        WP_Mock::userFunction( 'apply_filters' )->andReturnUsing(
+            function ( $tag, $value ) {
+                return $value;
+            }
+        );
+
+        return Zalomeni::texturize_plain( $value );
+    }
+
     // =========================================================================
     // Prepositions (k, s, v, z)
     // =========================================================================
@@ -463,5 +505,34 @@ class TexturizeTest extends TestCase {
             [ 'zalomeni_custom_terms' => "Ubuntu \\d\\d" ]
         );
         $this->assertStringContainsString( 'Ubuntu&nbsp;22', $result );
+    }
+
+    // =========================================================================
+    // Plain text values (ACF text / textarea fields)
+    // =========================================================================
+
+    public function test_plain_text_uses_nbsp_character_not_entity(): void {
+        $result = $this->texturize_plain_with_options( 'Šel v lese.' );
+        // The theme escapes these values, so the entity would show up as text.
+        $this->assertStringContainsString( "v\xC2\xA0lese", $result );
+        $this->assertStringNotContainsString( '&nbsp;', $result );
+    }
+
+    public function test_plain_text_survives_escaping(): void {
+        $result = $this->texturize_plain_with_options( 'Šel v lese.' );
+        $this->assertStringContainsString( "v\xC2\xA0lese", htmlspecialchars( $result, ENT_QUOTES, 'UTF-8' ) );
+    }
+
+    public function test_plain_text_keeps_non_strings_untouched(): void {
+        $this->assertNull( $this->texturize_plain_with_options( null ) );
+        $this->assertSame( [], $this->texturize_plain_with_options( [] ) );
+        $this->assertSame( 42, $this->texturize_plain_with_options( 42 ) );
+        $this->assertSame( '', $this->texturize_plain_with_options( '' ) );
+    }
+
+    public function test_plain_text_without_matches_is_unchanged(): void {
+        $input  = 'Text bez jednopísmenných slov.';
+        $result = $this->texturize_plain_with_options( $input );
+        $this->assertSame( $input, $result );
     }
 }
