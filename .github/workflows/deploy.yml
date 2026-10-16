@@ -6,6 +6,8 @@ jobs:
   tag:
     name: New release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -17,3 +19,7 @@ jobs:
       env:
         SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+    - name: Attach ZIP to GitHub release
+      run: gh release upload "${{ github.event.release.tag_name }}" "${{ steps.deploy.outputs.zip-path }}" --clobber
+      env:
+        GH_TOKEN: ${{ github.token }}

@@ -15,7 +15,7 @@
 
 The release flow is fully automated by GitHub Actions:
 
-- `.github/workflows/deploy.yml` — runs on `release: published`. Calls `10up/action-wordpress-plugin-deploy` which packages via `.distignore`, pushes to WordPress.org SVN trunk + tag, and attaches the generated `zalomeni.zip` to the GitHub release.
+- `.github/workflows/deploy.yml` — runs on `release: published`. Calls `10up/action-wordpress-plugin-deploy` which packages via `.distignore`, pushes to WordPress.org SVN trunk + tag, and attaches the generated `zalomeni.zip` to the GitHub release (via `gh release upload`; the job needs `contents: write`).
 - `.github/workflows/update-readme.yml` — runs on push to `main` when `readme.txt` or `.wordpress-org/**` change. Pushes only readme + assets to WP.org SVN trunk so listing updates don't require a full release.
 
 Both workflows need two repository secrets — set them once with:
