@@ -53,7 +53,13 @@ composer install
 vendor/bin/phpunit
 ```
 
-The suite is 63 tests / 124 assertions using [WP_Mock](https://github.com/10up/wp_mock) with PHPUnit 9.6. Running the tests needs PHP 7.4+; the plugin itself targets PHP 7.0+.
+Tests use [WP_Mock](https://github.com/10up/wp_mock) with PHPUnit 9.6 and require PHP 7.4+; the plugin itself targets PHP 7.0+.
+
+For integration checks, use a WordPress 6.7+ installation with this plugin and Bricks Builder active:
+
+```bash
+ZALOMENI_WP_LOAD=/path/to/wordpress/wp-load.php php tests/bricks-support.php --group=bricks
+```
 
 See [CLAUDE.md](CLAUDE.md) for the pre-release checklist, the distribution payload, and the automated WordPress.org deploy flow.
 

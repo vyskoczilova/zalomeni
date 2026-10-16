@@ -78,7 +78,7 @@ Themes usually escape those values with `esc_html()`, which would turn a `&nbsp;
 
 = Which WordPress filters does the plugin apply to? =
 
-The plugin applies to these filters by default: `comment_author`, `term_name`, `link_name`, `link_description`, `link_notes`, `bloginfo`, `wp_title`, `widget_title`, `term_description`, `the_title`, `the_content`, `the_excerpt`, `comment_text`, `single_post_title`, `list_cats`, `acf_the_content`.
+The plugin applies to these filters by default: `comment_author`, `term_name`, `link_name`, `link_description`, `link_notes`, `bloginfo`, `wp_title`, `widget_title`, `term_description`, `the_title`, `the_content`, `the_excerpt`, `comment_text`, `single_post_title`, `list_cats`, `acf_the_content`, `bricks/frontend/render_data`.
 
 Fields of Advanced Custom Fields are covered as well — see the ACF question below.
 
@@ -106,6 +106,12 @@ function remove_acf_textarea_from_zalomeni(array $filters) {
 2. Example output
 
 == Changelog ==
+
+= 2.2.0 =
+
+* New: Bricks Builder support — non-breaking spaces are added to the HTML Bricks renders for headers, content, footers and popups (requires WordPress 6.7+; contributed by @arteagacz)
+* Only visible text is changed; attributes, scripts, styles, SVG/MathML and tags from `no_texturize_tags` are left alone, and the Bricks editor is skipped
+* Remove `bricks/frontend/render_data` through the `zalomeni_filtry` filter to turn Bricks support off
 
 = 2.1.0 (2026-09-25) =
 
