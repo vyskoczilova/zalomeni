@@ -2,8 +2,8 @@
 Contributors: vyskoczilova, honza.skypala
 Tags: czech, slovak, typography, space
 Requires at least: 6.0
-Tested up to: 7.1.2
-Stable tag: 2.1.0
+Tested up to: 7.1
+Stable tag: 2.2.0
 Requires PHP: 7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -107,7 +107,7 @@ function remove_acf_textarea_from_zalomeni(array $filters) {
 
 == Changelog ==
 
-= 2.2.0 =
+= 2.2.0 (2026-10-16) =
 
 * New: Bricks Builder support — non-breaking spaces are added to the HTML Bricks renders for headers, content, footers and popups (requires WordPress 6.7+; contributed by @arteagacz)
 * Only visible text is changed; attributes, scripts, styles, SVG/MathML and tags from `no_texturize_tags` are left alone, and the Bricks editor is skipped

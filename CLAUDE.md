@@ -2,14 +2,14 @@
 
 ## Before Release
 
-- [ ] Run `wp plugin check zalomeni --severity=error` (Plugin Check / PCP) and fix any errors. Warnings on dev files (`.distignore`, `.gitignore`, `.github`, `.claude`, `CLAUDE.md`, `tests/`) are expected — PCP scans the working tree, not the dist payload, and `.distignore` excludes them all from the actual WP.org release. The `no_texturize_tags` / `no_texturize_shortcodes` warnings in `zalomeni.php` are intentional reads of WordPress core filters and can also be ignored.
+- [ ] Run `wp plugin check zalomeni --severity=error` (Plugin Check / PCP) and fix any errors. Warnings on dev files (`.distignore`, `.gitignore`, `.github`, `.claude`, `CLAUDE.md`, `tests/`) and errors in the CLI-only `tests/bricks-support.php` are expected — PCP scans the working tree, not the dist payload, and `.distignore` excludes them all from the actual WP.org release. The `no_texturize_tags` / `no_texturize_shortcodes` warnings in `zalomeni.php` are intentional reads of WordPress core filters and can also be ignored.
 - [ ] Run `vendor/bin/phpunit` — all tests must pass
 - [ ] Test on a live WordPress install (activate, check Settings → Reading, verify non-breaking spaces in post content)
 - [ ] Verify the admin credit box displays correctly
 - [ ] Validate `readme.txt` at https://wordpress.org/plugins/developers/readme-validator/
 - [ ] Confirm short description (line right after the headers) is ≤150 characters: `awk 'NR==11 {print length($0)}' readme.txt`
 - [ ] Bump `Stable tag` in `readme.txt` and `Version` in `zalomeni.php` header + `Zalomeni::version` constant
-- [ ] Confirm `Tested up to:` in `readme.txt` is a *released* WordPress version (RCs and unreleased majors are rejected by the validator)
+- [ ] Confirm `Tested up to:` in `readme.txt` is a *released* WordPress version given as major only, e.g. `7.1` (PCP rejects a minor like `7.1.3`; RCs and unreleased majors are rejected by the validator)
 
 ## Release & Deploy
 
